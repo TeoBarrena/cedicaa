@@ -1,0 +1,503 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Jinete y Amazona{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+    
+    <div class="container">
+        <h1 class="text-primary">Crear Jinete o Amazona</h1>
+        <h5>DATOS PERSONALES DEL JINETE O AMAZONA:</h5>
+        <form method="POST" action="{{ url_for('jinete_amazonas.create_rider') }}" >
+            <div class="mb-3">
+                <label for="first_name" class="form-label">Nombre/s:</label>
+                <input type="text" class="form-control" id="first_name" name="first_name" value="{{ request.form.get('first_name', '') }}" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="last_name" class="form-label">Apellido/s:</label>
+                <input type="text" class="form-control" id="last_name" name="last_name" value="{{ request.form.get('last_name', '') }}" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="dni" class="form-label">DNI:</label>
+                <input type="number" class="form-control" id="dni" name="dni" value="{{ request.form.get('dni', '') }}" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="birth_date" class="form-label">Fecha de nacimiento:</label>
+                <input type="date" class="form-control" id="birth_date" name="birth_date" required max="{{ today.strftime('%Y-%m-%d') }}" value="{{ request.form.get('birth_date', '') }}">
+            </div>
+
+            <h6>Lugar de nacimiento</h6>
+            <div class="form-group mb-3">
+                <label for="province" class="form-label">Provincia</label>
+                <select class="form-control" id="province" name="province" required onchange="updateTowns(event)">
+                    <option value="">Selecciona una provincia</option>
+                    {% for province, towns in provinces.items() %}
+                        <option value="{{ province }}">{{ province }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label for="town_id" class="form-label">Ciudad</label>
+                <select class="form-control" id="town_id" name="town_id" required>
+                    <option value="">Selecciona una ciudad</option>
+                </select>
+            </div>
+
+            <h6>Domicilio actual</h6>
+            <div class="mb-3">
+                <label for="address" class="form-label">Calle</label>
+                <input type="text" class="form-control" id="address" name="address" value="{{ request.form.get('address', '') }}" placeholder="Ingrese la calle" required>
+            </div>
+            <div class="mb-3">
+                <label for="number" class="form-label">Número</label>
+                <input type="number" class="form-control" id="number" name="number" value="{{ request.form.get('number', '') }}" placeholder="Ingrese el número" required>
+            </div>
+            <div class="mb-3">
+                <label for="apartment" class="form-label">Departamento</label>
+                <input type="text" class="form-control" id="apartment" name="apartment" value="{{ request.form.get('apartment', '') }}" placeholder="Ingrese el departamento (opcional)" >
+            </div>
+
+
+            <div class="form-group mb-3">
+                <label for="province_address" class="form-label">Provincia</label>
+                <select class="form-control" id="province_address" name="province_address" required onchange="updateTowns(event)">
+                    <option value="">Selecciona una provincia</option>
+                    {% for province, towns in provinces.items() %}
+                        <option value="{{ province }}">{{ province }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label for="town_id_of_birth" class="form-label">Ciudad</label>
+                <select class="form-control" id="town_id_of_birth" name="town_id_of_birth" required>
+                    <option value="">Selecciona una ciudad</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="phone" class="form-label">Teléfono actual:</label>
+                <input type="text" class="form-control" id="phone" name="phone" value="{{ request.form.get('phone', '') }}" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="emergency_contact" class="form-label">Contacto de emergencia:</label>
+                <input type="text" class="form-control" id="emergency_contact" name="emergency_contact" value="{{ request.form.get('emergency_contact', '') }}">
+            </div>
+            
+            <div class="mb-3">
+                <label for="emergency_phone" class="form-label">Teléfono de emergencia:</label>
+                <input type="text" class="form-control" id="emergency_phone" name="emergency_phone" value="{{ request.form.get('emergency_phone', '') }}">
+            </div>
+
+            <div class="mb-3">
+                <label for="scholarship" class="form-label">¿Está becado?</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="scholarship_yes" name="scholarship" value="True" {% if request.form.get('scholarship') == 'True' %}checked{% endif %}>
+                    <label class="form-check-label" for="scholarship_yes">Sí</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="scholarship_no" name="scholarship" value="False" {% if request.form.get('scholarship') != 'True' %}checked{% endif %}>
+                    <label class="form-check-label" for="scholarship_no">No</label>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="scholarship_notes" class="form-label">Observaciones:</label>
+                <textarea class="form-control" id="scholarship_notes" name="scholarship_notes">{{ request.form.get('scholarship_notes', '') }}</textarea>
+            </div>
+            
+            <div class="mb-3">
+                <label for="has_disability_certificate" class="form-label">¿Posee Certificado de Discapacidad?</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="has_disability_certificate" id="has_disability_certificate_yes" value="True" {% if request.form.get('has_disability_certificate') == 'True' %}checked{% endif %}>
+                    <label class="form-check-label" for="has_disability_certificate_yes">Sí</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="has_disability_certificate" id="has_disability_certificate_no" value="False" {% if request.form.get('has_disability_certificate') != 'True' %}checked{% endif %}>
+                    <label class="form-check-label" for="has_disability_certificate_no">No</label>
+                </div>
+            </div>
+            
+            <div id="diagnosis_section" class="mb-3" style="display: none;">
+                <label for="diagnosis" class="form-label">¿Con qué diagnóstico?</label>
+                <select class="form-select" id="diagnosis" name="diagnosis" required>
+                    <option value="" disabled selected>Seleccione el diagnóstico</option>
+                    {% for diagnosis in diagnosis_options %}
+                        <option value="{{ diagnosis }}" {% if request.form.get('diagnosis') == diagnosis %}selected{% endif %}>{{ diagnosis }}</option>
+                    {% endfor %}
+                    <option value="OTRO" {% if request.form.get('diagnosis') == 'OTRO' %}selected{% endif %}>OTRO</option>
+                </select>
+            </div>
+            
+            <div id="other_diagnosis_section" class="mb-3" style="display: none;">
+                <label for="other_diagnosis" class="form-label">Indique cuál</label>
+                <input type="text" class="form-control" id="other_diagnosis" name="other_diagnosis" value="{{ request.form.get('other_diagnosis', '') }}" placeholder="Ingrese el diagnóstico">
+            </div>
+            
+            <div class="mb-3">
+                <label for="disability_type" class="form-label">Tipo de Discapacidad</label>
+                {% for disability in disability_types %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="{{ disability | lower }}" name="disability_type" value="{{ disability }}" {% if disability in request.form.getlist('disability_type') %}checked{% endif %}>
+                    <label class="form-check-label" for="{{ disability | lower }}">
+                        {{ disability }}
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="mb-3">
+                <label for="family_allowance" class="form-label">¿Percibe una Asignación Familiar?</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="family_allowance_yes" name="family_allowance" value="True" {% if request.form.get('family_allowance') == 'True' %}checked{% endif %}>
+                    <label class="form-check-label" for="family_allowance_yes">Sí</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="family_allowance_no" name="family_allowance" value="False" {% if request.form.get('family_allowance') != 'True' %}checked{% endif %}>
+                    <label class="form-check-label" for="family_allowance_no">No</label>
+                </div>
+            </div>
+            
+            <div id="family_allowance_section" class="mb-3" style="display: none;">
+                <label class="form-label">Seleccione la(s) Asignación(es) que percibe:</label>
+                {% for allowance in family_allowance %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="{{ allowance | lower | replace(' ', '_') }}" name="allowance_type" value="{{ allowance }}" {% if allowance in request.form.getlist('allowance_type') %}checked{% endif %}>
+                    <label class="form-check-label" for="{{ allowance | lower | replace(' ', '_') }}">{{ allowance }}</label>
+                </div>
+                {% endfor %}
+            </div>
+
+            
+            <div class="mb-3">
+                <label for="pension" class="form-label">¿Es beneficiario de alguna pensión?</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="pension_yes" name="pension" value="True" {% if request.form.get('pension') == 'True' %}checked{% endif %}>
+                    <label class="form-check-label" for="pension_yes">Sí</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="pension_no" name="pension" value="False" {% if request.form.get('pension') != 'True' %}checked{% endif %}>
+                    <label class="form-check-label" for="pension_no">No</label>
+                </div>
+            </div>
+            
+            <div id="pension_section" class="mb-3" style="display: none;">
+                <label class="form-label">Seleccione la pensión de la que es beneficiario:</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="provincial" name="pension_type" value="Provincial" {% if request.form.get('pension_type') == 'Provincial' %}checked{% endif %}>
+                    <label class="form-check-label" for="provincial">Provincial</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="nacional" name="pension_type" value="Nacional" {% if request.form.get('pension_type') == 'Nacional' %}checked{% endif %}>
+                    <label class="form-check-label" for="nacional">Nacional</label>
+                </div>
+            </div>
+            
+            <h5>SITUACIÓN PREVISIONAL</h5>
+            <div class="mb-3">
+                <label for="social_security" class="form-label">Obra Social del Alumno:</label>
+                <input type="text" class="form-control" id="social_security" name="social_security" value="{{ request.form.get('social_security', '') }}" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="member_number" class="form-label">Nº afiliado:</label>
+                <input type="number" class="form-control" id="member_number" name="member_number" value="{{ request.form.get('member_number', '') }}" required*>
+            </div>
+            
+            <div class="mb-3">
+                <label for="cure" class="form-label">¿Posee curatela?</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="cure_yes" name="cure" value="True" {% if request.form.get('cure') == 'True' %}checked{% endif %}>
+                    <label class="form-check-label" for="cure_yes">Sí</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="cure_no" name="cure" value="False" {% if request.form.get('cure') != 'True' %}checked{% endif %}>
+                    <label class="form-check-label" for="cure_no">No</label>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="social_security_notes" class="form-label">Observaciones:</label>
+                <textarea class="form-control" id="social_security_notes" name="social_security_notes">{{ request.form.get('social_security_notes', '') }}</textarea>
+            </div>
+            
+            <h5>INSTITUCIÓN ESCOLAR a la que CONCURRE ACTUALMENTE:</h5>
+            <div class="mb-3">
+                <label for="school_name" class="form-label">Nombre de la Institución</label>
+                <input type="text" class="form-control" id="school_name" name="school_name" value="{{ request.form.get('school_name', '') }}" placeholder="Ingrese el nombre de la institución" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="school_address" class="form-label">Dirección</label>
+                <input type="text" class="form-control" id="school_address" name="school_address" value="{{ request.form.get('school_address', '') }}" placeholder="Ingrese la dirección de la institución" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="school_phone" class="form-label">Teléfono</label>
+                <input type="text" class="form-control" id="school_phone" name="school_phone" value="{{ request.form.get('school_phone', '') }}" placeholder="Ingrese el teléfono" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="school_grade" class="form-label">Grado / año actual</label>
+                <input type="number" class="form-control" id="school_grade" name="school_grade" value="{{ request.form.get('school_grade', '') }}" placeholder="Ingrese el grado o año" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="school_notes" class="form-label">Observaciones</label>
+                <textarea class="form-control" id="school_notes" name="school_notes" rows="3">{{ request.form.get('school_notes', '') }}</textarea>
+            </div>
+            
+            <h5>PROFESIONALES que lo ATIENDEN:</h5>
+            <div class="mb-3">
+                <textarea class="form-control" id="professionals" name="professionals" required>{{ request.form.get('professionals', '') }}</textarea>
+            </div>
+            
+            <h5>DATOS PERSONALES De FAMILIAR/es O TUTOR/es RESPONSABLE/s:</h5>
+            <h6>Familiar 1:</h6>
+            <div class="mb-3">
+                <label for="relative1_relationship" class="form-label">Relación</label>
+                <input type="text" class="form-control" id="relative1_relationship" name="relative1_relationship" value="{{ request.form.get('relative1_relationship', '') }}" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="relative1_first_name" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="relative1_first_name" name="relative1_first_name" value="{{ request.form.get('relative1_first_name', '') }}" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="relative1_last_name" class="form-label">Apellido</label>
+                <input type="text" class="form-control" id="relative1_last_name" name="relative1_last_name" value="{{ request.form.get('relative1_last_name', '') }}" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="relative1_dni" class="form-label">DNI</label>
+                <input type="text" class="form-control" id="relative1_dni" name="relative1_dni" value="{{ request.form.get('relative1_dni', '') }}" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="relative1_address" class="form-label">Dirección</label>
+                <input type="text" class="form-control" id="relative1_address" name="relative1_address" value="{{ request.form.get('relative1_address', '') }}">
+            </div>
+            
+            <div class="mb-3">
+                <label for="relative1_mobile" class="form-label">Teléfono móvil</label>
+                <input type="text" class="form-control" id="relative1_mobile" name="relative1_mobile" value="{{ request.form.get('relative1_mobile', '') }}">
+            </div>
+            
+            <div class="mb-3">
+                <label for="relative1_email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="relative1_email" name="relative1_email" value="{{ request.form.get('relative1_email', '') }}">
+            </div>
+            
+            <div class="mb-3">
+                <label for="relative1_education" class="form-label">Nivel de educación</label>
+                <select class="form-select" id="relative1_education" name="relative1_education">
+                    <option value="" disabled selected>Seleccione el Nivel de educación</option>
+                    {% for education_option in education_options %}
+                        <option value="{{ education_option }}" {% if request.form.get('relative1_education') == education_option %}selected{% endif %}>{{ education_option }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="relative1_occupation" class="form-label">Ocupación</label>
+                <input type="text" class="form-control" id="relative1_occupation" name="relative1_occupation" value="{{ request.form.get('relative1_occupation', '') }}">
+            </div>
+            
+            <div class="mb-3">
+                <input type="checkbox" id="show_second_relative" name="show_second_relative" {% if request.form.get('show_second_relative') %}checked{% endif %}>
+                <label for="show_second_relative">Agregar segundo familiar</label>
+            </div>
+            
+            <div id="second_relative_section" class="mb-3" style="display: none;">
+                <h6>Familiar 2:</h6>
+                <div class="mb-3">
+                    <label for="relative2_relationship" class="form-label">Relación</label>
+                    <input type="text" class="form-control" id="relative2_relationship" name="relative2_relationship" value="{{ request.form.get('relative2_relationship', '') }}">
+                </div>
+                <div class="mb-3">
+                    <label for="relative2_first_name" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="relative2_first_name" name="relative2_first_name" value="{{ request.form.get('relative2_first_name', '') }}">
+                </div>
+                <div class="mb-3">
+                    <label for="relative2_last_name" class="form-label">Apellido</label>
+                    <input type="text" class="form-control" id="relative2_last_name" name="relative2_last_name" value="{{ request.form.get('relative2_last_name', '') }}">
+                </div>
+                <div class="mb-3">
+                    <label for="relative2_dni" class="form-label">DNI</label>
+                    <input type="text" class="form-control" id="relative2_dni" name="relative2_dni" value="{{ request.form.get('relative2_dni', '') }}">
+                </div>
+                <div class="mb-3">
+                    <label for="relative2_address" class="form-label">Dirección</label>
+                    <input type="text" class="form-control" id="relative2_address" name="relative2_address" value="{{ request.form.get('relative2_address', '') }}">
+                </div>
+                <div class="mb-3">
+                    <label for="relative2_mobile" class="form-label">Teléfono móvil</label>
+                    <input type="text" class="form-control" id="relative2_mobile" name="relative2_mobile" value="{{ request.form.get('relative2_mobile', '') }}">
+                </div>
+                <div class="mb-3">
+                    <label for="relative2_email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="relative2_email" name="relative2_email" value="{{ request.form.get('relative2_email', '') }}">
+                </div>
+                <div class="mb-3">
+                    <label for="relative2_education" class="form-label">Nivel de educación</label>
+                    <select class="form-select" id="relative2_education" name="relative2_education">
+                        <option value="" disabled selected>Seleccione el Nivel de educación</option>
+                        {% for education_option in education_options %}
+                            <option value="{{ education_option }}" {% if request.form.get('relative2_education') == education_option %}selected{% endif %}>{{ education_option }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="relative2_occupation" class="form-label">Ocupación</label>
+                    <input type="text" class="form-control" id="relative2_occupation" name="relative2_occupation" value="{{ request.form.get('relative2_occupation', '') }}">
+                </div>
+            </div>
+            
+            <h5>TRABAJO EN NUESTRA INSTITUCIÓN:</h5>
+            <div class="mb-3">
+                <label for="proposal_type" class="form-label">Propuesta de trabajo institucional</label>
+                <select class="form-select" id="proposal_type" name="proposal_type" required>
+                    <option value="" disabled selected>Seleccione una opción</option>
+                    {% for type in proposal_types %}
+                        <option value="{{ type }}" {% if request.form.get('proposal_type') == type %}selected{% endif %}>{{ type }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="condition" class="form-label">Condición</label>
+                <select class="form-select" id="condition" name="condition" required>
+                    <option value="" disabled selected>Seleccione una opción</option>
+                    {% for condition in conditions %}
+                        <option value="{{ condition }}" {% if request.form.get('condition') == condition %}selected{% endif %}>{{ condition }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="location" class="form-label">SEDE</label>
+                <select class="form-select" id="location" name="location" required>
+                    <option value="" disabled selected>Seleccione una sede</option>
+                    {% for location in locations %}
+                        <option value="{{ location }}" {% if request.form.get('location') == location %}selected{% endif %}>{{ location }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+
+            <div class="mb-3">
+                <label for="days" class="form-label">DÍA</label>
+                {% set selected_days = request.form.getlist('days[]') %}
+                {% for day in days_options %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="{{ day | lower }}" name="days[]" value="{{ day }}" 
+                        {% if day in selected_days %}checked{% endif %} >
+                        <label class="form-check-label" for="{{ day | lower }}">{{ day }}</label>
+                    </div>
+                {% endfor %}
+            </div>  
+            
+            <div class="mb-3">
+                <label for="therapist" class="form-label">Profesor/a o Terapeuta</label>
+                <select class="form-select" id="therapist" name="therapist" required>
+                    <option value="" disabled selected>Seleccione al Profesor/a o Terapeuta</option>
+                    {% for therapist in therapists %}
+                        <option value="{{ therapist.id }}" {% if request.form.get('therapist') == therapist %}selected{% endif %}>{{ therapist.name }} {{therapist.lastname }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="driver" class="form-label">Conductor/a del Caballo</label>
+                <select class="form-select" id="driver" name="driver" required>
+                    <option value="" disabled selected>Seleccione al Conductor/a del Caballo</option>
+                    {% for driver in drivers %}
+                        <option value="{{ driver.id }}" {% if request.form.get('driver') == driver %}selected{% endif %}>{{ driver.name }} {{driver.lastname }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="horse" class="form-label">Caballo</label>
+                <select class="form-select" id="horse" name="horse" required>
+                    <option value="" disabled selected>Seleccione al Caballo</option>
+                    {% for horse in horses %}
+                        <option value="{{ horse.id }}" {% if request.form.get('horse') == horse %}selected{% endif %}>{{ horse.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="assistant" class="form-label">Auxiliar de Pista</label>
+                <select class="form-select" id="assistant" name="assistant" required>
+                    <option value="" disabled selected>Seleccione al Auxiliar de Pista</option>
+                    {% for assistant in assistants %}
+                        <option value="{{ assistant.id }}" {% if request.form.get('assistant') == assistant %}selected{% endif %}>{{ assistant.name }} {{assistant.lastname }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+
+            <button type="submit" class="btn btn-primary">Crear Jinete o Amazona</button>
+                  
+            <a href="{{ url_for('jinete_amazonas.list_riders') }}" class="btn btn-outline-primary">Volver</a>
+            
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/jinete_amazonas/disability.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jinete_amazonas/pension.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jinete_amazonas/second_relative.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jinete_amazonas/family_allowance.js') }}"></script>
+    <script>
+        const provinceTowns = {{ provinces|tojson }};
+
+        function updateTowns(event) {
+            // Identificar cuál es el selector de provincias que disparó el evento
+            const provinceSelect = event.target;
+            const selectedProvince = provinceSelect.value;
+            
+            // Determinar cuál es el select correspondiente de ciudades basado en el ID del selector de provincias
+            let townSelect;
+            if (provinceSelect.id === 'province') {
+                townSelect = document.getElementById('town_id');
+            } else if (provinceSelect.id === 'province_address') {
+                townSelect = document.getElementById('town_id_of_birth');
+            }
+
+            // Si se ha encontrado el select correspondiente de ciudades, proceder
+            if (townSelect) {
+                // Limpiar las opciones previas
+                townSelect.innerHTML = '<option value="">Selecciona una ciudad</option>';
+
+                // Verificar si hay una provincia seleccionada y cargar las ciudades correspondientes
+                if (selectedProvince && provinceTowns[selectedProvince]) {
+                    const towns = provinceTowns[selectedProvince];
+
+                    towns.forEach(town => {
+                        // Crear la opción para cada ciudad
+                        const option = document.createElement('option');
+                        option.value = town.id; // Usar el ID de la ciudad como valor
+                        option.textContent = town.name; // Mostrar el nombre de la ciudad
+                        townSelect.appendChild(option);
+                    });
+                }
+            }
+        }
+
+
+    </script>
+{% endblock %}
+
+
+

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Registrar pago{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+Beneficiario (empleado dado de alta en el sistema si es pago de honorarios, si aplica)
+Monto
+Fecha de pago
+Tipo de pago (Honorarios, proveedor, gastos varios)
+Descripción
+
+
+{% block content %}
+<div class="d-flex justify-content-center mt-5">
+    <div class="card" style="width: 30rem;">
+        <div class="card-body">
+            <h2 class="card-title text-center mb-4">Registrar pago</h2>
+            <form action="{{ url_for('payments_record.create') }}" method="POST">
+
+                <div class="form-group mb-3">
+                    <label for="payment_type">Tipo de pago</label>
+                    <select class="form-control" id="payment_type" name="payment_type" required onchange="toggleBeneficiary()">
+                        <option value="" disabled selected>Selecciona el tipo de pago</option>
+                        <option value="Honorarios">Honorarios</option>
+                        <option value="Gastos varios">Gastos varios</option>
+                        <option value="Proveedor">Proveedor</option>
+                    </select>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="employee_id">Beneficiario</label>
+                    <select class="form-control" id="employee_id" name="employee_id" disabled>
+                        <option value="" disabled selected>Selecciona un beneficiario</option>
+                        {% for employee in employees %}
+                            <option value="{{ employee.id }}">{{ employee.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="amount">Monto</label>
+                    <input type="number" class="form-control" id="amount" name="amount" placeholder="Ingresa el monto del pago" required step="0.01">
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="payment_date" class="form-label">Fecha de pago</label>
+                    <input 
+                        type="date" 
+                        class="form-control" 
+                        id="payment_date" 
+                        name="payment_date" 
+                        required 
+                        max="{{ today.strftime('%Y-%m-%d') }}"
+                    >
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="social_work">Descripción</label>
+                    <input type="text" class="form-control" id="description" name="description" placeholder="Ingresa una descripción" required>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary">Registrar pago</button>
+                    <a href="{{ url_for('payments_record.index') }}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleBeneficiary() {
+        const paymentType = document.getElementById('payment_type').value;
+        const employeeSelect = document.getElementById('employee_id');
+        
+        if (paymentType === 'Honorarios') {
+            employeeSelect.disabled = false;
+        } else {
+            employeeSelect.disabled = true;
+            employeeSelect.value = ""; // Resetea la selección si se deshabilita
+        }
+    }
+</script>
+
+{% endblock %}

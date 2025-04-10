@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+
+{% block title %}Ver Jinete{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/delete.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+    <h3>Documentos Asociados de {{ rider.first_name }} {{ rider.last_name }}</h3>
+    <!-- Formulario de búsqueda -->
+    <form method="GET" action="{{ url_for('jinete_amazonas.view_documents', rider_id=rider.id) }}" class="mb-3">
+        <div class="row">
+            <div class="col-md-4">
+                <input type="text" class="form-control" name="search_title" placeholder="Buscar por título" value="{{ search_title }}">
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" name="document_type">
+                    <option value="">Filtrar por tipo</option>
+                    <option value="entrevista" {% if document_type == 'entrevista' %}selected{% endif %}>Entrevista</option>
+                    <option value="evaluación" {% if document_type == 'evaluación' %}selected{% endif %}>Evaluación</option>
+                    <option value="planificaciones" {% if document_type == 'planificaciones' %}selected{% endif %}>Planificaciones</option>
+                    <option value="evolución" {% if document_type == 'evolución' %}selected{% endif %}>Evolución</option>
+                    <option value="crónicas" {% if document_type == 'crónicas' %}selected{% endif %}>Crónicas</option>
+                    <option value="documental" {% if document_type == 'documental' %}selected{% endif %}>Documental</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" name="sort_by">
+                    <option value="uploaded_at" {% if sort_by == 'uploaded_at' %}selected{% endif %}>Ordenar por fecha</option>
+                    <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Ordenar por título</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" name="order">
+                    <option value="asc" {% if order == 'asc' %}selected{% endif %}>Ascendente</option>
+                    <option value="desc" {% if order == 'desc' %}selected{% endif %}>Descendente</option>
+                </select>
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+        </div>
+    </form>
+    <!-- Botón para cargar nuevo documento -->
+    <a href="#" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#uploadModal">Cargar Documento</a>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-5">Título</th>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for document in documents %}
+                <tr>
+                    <td>{{ document.title }}</td>
+                    <td>{{ document.uploaded_at.strftime('%d/%m/%Y') }}</td>
+                    <td>{{ document.document_type }}</td>
+                    <td class="d-flex justify-content-between">
+                        {% if document.is_external %}
+                            <a href="{{ document.file_path }}" class="btn btn-primary" target="_blank">Ir al documento</a>
+                        {% else %}
+                            {% set document_file_url = file_url(document.file_path) %}
+                            <a href="{{ document_file_url }}" 
+                            class="btn btn-primary {% if not document_file_url %}disabled{% endif %}" 
+                            {% if document_file_url %}download="{{ document.file_path }}"{% endif %}>
+                                Descargar
+                            </a>
+                        {% endif %}
+                        <a href="{{ url_for('jinete_amazonas.update_document', document_id=document.id) }}" class="btn btn-secondary">Editar</a>
+                        <a href="{{ url_for('jinete_amazonas.destroy_document', document_id=document.id) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar este documento?')">Eliminar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <!-- Paginación -->
+    <div class="d-flex justify-content-center">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if documents.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('jinete_amazonas.view_rider', rider_id=rider.id, page=documents.prev_num) }}">Anterior</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link">Anterior</a>
+                    </li>
+                {% endif %}
+
+                {% for page_num in documents.iter_pages() %}
+                    {% if page_num %}
+                        {% if page_num == documents.page %}
+                            <li class="page-item active">
+                                <a class="page-link">{{ page_num }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('jinete_amazonas.view_rider', rider_id=rider.id, page=page_num) }}">{{ page_num }}</a>
+                            </li>
+                        {% endif %}
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link">...</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if documents.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('jinete_amazonas.view_rider', rider_id=rider.id, page=documents.next_num) }}">Siguiente</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link">Siguiente</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        </div>
+    <a href="{{ url_for('jinete_amazonas.list_riders') }}" class="btn btn-outline-primary">Volver</a>
+    <!-- Modal para cargar documentos -->
+    <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uploadModalLabel">Cargar Nuevo Documento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{{ url_for('jinete_amazonas.upload_document', rider_id=rider.id) }}" enctype="multipart/form-data">
+
+
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="document_type" class="form-label">Tipo de Documento</label>
+                            <select class="form-select" id="document_type" name="document_type" required>
+                                <option value="entrevista">Entrevista</option>
+                                <option value="evaluación">Evaluación</option>
+                                <option value="planificaciones">Planificaciones</option>
+                                <option value="evolución">Evolución</option>
+                                <option value="crónicas">Crónicas</option>
+                                <option value="documental">Documental</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="upload_type" class="form-label">Tipo de Documento</label>
+                            <select id="upload_type" name="upload_type" class="form-select" required>
+                                <option value="" disabled selected>Seleccione una opción</option>
+                                <option value="file">Subir Archivo</option>
+                                <option value="url">Enlace Externo</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Campo para subir archivo -->
+                        <div class="mb-3" id="file_container" style="display: none;">
+                            <label for="file" class="form-label">Archivo (PDF, DOC, XLS, JPEG)</label>
+                            <input type="file" class="form-control" id="file" name="file">
+                        </div>
+                        
+                        <!-- Campo para ingresar enlace -->
+                        <div class="mb-3" id="url_container" style="display: none;">
+                            <label for="file_url" class="form-label">Enlace Externo</label>
+                            <input type="url" class="form-control" id="file_url" name="file_url">
+                        </div>
+                        
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Cargar Documento</button>
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var uploadTypeSelect = document.getElementById('upload_type');
+            var fileContainer = document.getElementById('file_container');
+            var urlContainer = document.getElementById('url_container');
+
+            uploadTypeSelect.addEventListener('change', function() {
+                if (uploadTypeSelect.value === 'file') {
+                    fileContainer.style.display = 'block';
+                    urlContainer.style.display = 'none';
+                } else if (uploadTypeSelect.value === 'url') {
+                    fileContainer.style.display = 'none';
+                    urlContainer.style.display = 'block';
+                } else {
+                    fileContainer.style.display = 'none';
+                    urlContainer.style.display = 'none';
+                }
+            });
+        });
+    </script>
+{% endblock %}
+

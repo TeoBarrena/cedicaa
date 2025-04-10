@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Publicación{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Editar Publicación</h1>
+
+    <form method="POST" action="{{ url_for('publications.update', publication_id=publication.id) }}">
+        <div class="mb-3">
+            <label for="title" class="form-label">Título</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ publication.title }}" required maxlength="100">
+        </div>
+
+        <div class="mb-3">
+            <label for="summary" class="form-label">Copete (Resumen)</label>
+            <textarea class="form-control" id="summary" name="summary" maxlength="255" rows="2" required>{{ publication.summary }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="content" class="form-label">Contenido</label>
+            <textarea class="form-control" id="content" name="content" rows="10" required>{{ publication.content }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <a href="{{ url_for('publications.index') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+<br>
+<a href="{{ url_for('publications.index') }}" class="btn btn-outline-primary">Volver</a>
+{% endblock %}

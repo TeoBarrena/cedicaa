@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Métricas | Profesionales{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+
+{% block content %}
+    <h1 class="text-center mb-3">Reporte de carga de los Profesionales</h1>
+    <form method="GET" action="{{ url_for('reports.get_professional_work') }}" class="mb-3">
+        <div class="row mt-2">
+            <div class="col-md-12 d-flex justify-content-end">
+                <label for="per_page" class="form-label me-2">Cabntidad por página:</label>
+                <select name="per_page" id="per_page" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                    <option value="5" {% if per_page == 5 %}selected{% endif %}>5</option>
+                    <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+                    <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+                    <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+                </select>
+            </div>
+        </div>
+    </form>
+    <div class="container" style="max-width: 80%; margin: 0 auto;">
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>DNI</th>
+                    <th>Nombre y apellido</th>
+                    <th>Profesión</th>
+                    <th>Casos activos</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in table_data %}
+                    <tr>
+                        <td>{{ row['dni'] }}</td>
+                        <td>{{ row['name_lastname'] }}</td>
+                        <td>{{ row['profession'] }}</td>
+                        <td>{{ row['count'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Paginación-->
+    <div class="d-flex justify-content-center">
+        <nav aria-label="Paginación de profesionales">
+            <ul class="pagination">
+                <!-- Botón para página anterior -->
+                <li class="page-item {% if not professional_pagination.has_prev %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for( 'reports.get_professional_work', page=professional_pagination.prev_num, per_page=per_page) }}" aria-label="Anterior">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                <!-- Números de página -->
+                {% for page_num in professional_pagination.iter_pages() %}
+                    {% if page_num %}
+                        <li class="page-item {% if page_num == professional_pagination.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for( 'reports.get_professional_work', page=page_num, per_page=per_page) }}">{{ page_num }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                    {% endif %}
+                {% endfor %}
+
+                <!-- Botón para página siguiente -->
+                <li class="page-item {% if not professional_pagination.has_next %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for( 'reports.get_professional_work', page=professional_pagination.next_num, per_page=per_page) }}" aria-label="Siguiente">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}

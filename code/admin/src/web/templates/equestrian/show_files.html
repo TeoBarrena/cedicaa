@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %}Ver Archivos{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <h1 class="text-center mt-4 mb-4">Archivos del Caballo</h1>
+                <div class="text-end mb-3">
+                    {% if check_permission(session,"equestrian_update") %}
+                        <a href="{{ url_for('horses.update_files', id_horse=id_horse) }}" class="btn btn-primary">Editar</a>
+                    {% endif %}
+                </div>
+
+                <ul class="list-group">
+                    <li class="list-group-item"> <strong>Ficha general del caballo:</strong>
+                        {% if horse.general_information %}
+                            {% set general_information_file_url = file_url(horse.general_information) %}
+                            {% if horse.general_information.endswith(('.jpg', '.jpeg', '.png')) %}
+                                <img src="{{ general_information_file_url }}" alt="Ficha general del caballo" class="img-fluid rounded shadow mt-3">
+                            {% else %}
+                                <a href="{{ general_information_file_url }}" download="{{ horse.general_information }}">Ficha de {{horse.name}}</a>
+                            {% endif %}
+                        {% else %}
+                            <p>No hay ningún archivo cargado</p>
+                        {% endif %}
+                    </li>
+
+                    <li class="list-group-item"> <strong>Planificación de Entrenamiento:</strong>
+                        {% if horse.training_schedule %}
+                            {% set training_schedule_file_url = file_url(horse.training_schedule) %}
+                            {% if horse.training_schedule.endswith(('.jpg', '.jpeg', '.png')) %}
+                                <img src="{{ training_schedule_file_url }}" alt="Planificación de Entrenamiento" class="img-fluid rounded shadow mt-3">
+                            {% else %}
+                                <a href="{{ training_schedule_file_url }}" download="{{ horse.training_schedule }}">Planificación de Entrenamiento de {{horse.name}}</a>
+                            {% endif %}
+                        {% else %}
+                            <p>No hay ningún archivo cargado</p>
+                        {% endif %}
+                    </li>
+
+                    <li class="list-group-item"> <strong>Informe de Evolución:</strong>
+                        {% if horse.progress_report %}
+                            {% set progress_report_file_url = file_url(horse.progress_report) %}
+                            {% if horse.progress_report.endswith(('.jpg', '.jpeg', '.png')) %}
+                                <img src="{{ progress_report_file_url }}" alt="Informe de Evolución" class="img-fluid rounded shadow mt-3">
+                            {% else %}
+                                <a href="{{ progress_report_file_url }}" download="{{ horse.progress_report }}">Informe de Evolución de {{horse.name}}</a>
+                            {% endif %}
+                        {% else %}
+                            <p>No hay ningún archivo cargado</p>
+                        {% endif %}
+                    </li>
+
+                    <li class="list-group-item"> <strong>Registro veterinario:</strong>
+                        {% if horse.vet_records %}
+                            {% set vet_records_file_url = file_url(horse.vet_records) %}
+                            {% if horse.vet_records.endswith(('.jpg', '.jpeg', '.png')) %}
+                                <img src="{{ vet_records_file_url }}" alt="Registro veterinario" class="img-fluid rounded shadow mt-3">
+                            {% else %}
+                                <a href="{{ vet_records_file_url }}" download="{{ horse.vet_records }}">Registro Veterinario de {{horse.name}}</a>
+                            {% endif %}
+                        {% else %}
+                            <p>No hay ningún archivo cargado</p>
+                        {% endif %}
+                    </li>
+
+                    <li class="list-group-item"> <strong>Imagen 1:</strong>
+                        {% if horse.image_1 %}
+                            {% set image_1_url = file_url(horse.image_1) %}
+                            {% if horse.image_1.endswith(('.jpg', '.jpeg', '.png')) %}
+                                <img src="{{ image_1_url }}" alt="Imagen 1" class="img-fluid rounded shadow mt-3">
+                            {% else %}
+                                <a href="{{ image_1_url }}" download="{{ horse.image_1 }}">Imagen 1 de {{horse.name}}</a>
+                            {% endif %}
+                        {% else %}
+                            <p>No hay ningún archivo cargado</p>
+                        {% endif %}
+                    </li>
+
+                    <li class="list-group-item"> <strong>Imagen 2:</strong>
+                        {% if horse.image_2 %}
+                            {% set image_2_url = file_url(horse.image_2) %}
+                            {% if horse.image_2.endswith(('.jpg', '.jpeg', '.png')) %}
+                                <img src="{{ image_2_url }}" alt="Imagen 2" class="img-fluid rounded shadow mt-3">
+                            {% else %}
+                                <a href="{{ image_2_url }}" download="{{ horse.image_2 }}">Imagen 2 de {{horse.name}}</a>
+                            {% endif %}
+                        {% else %}
+                            <p>No hay ningún archivo cargado</p>
+                        {% endif %}
+                    </li>
+
+                    <li class="list-group-item"> <strong>Imagen 3:</strong>
+                        {% if horse.image_3 %}
+                            {% set image_3_url = file_url(horse.image_3) %}
+                            {% if horse.image_3.endswith(('.jpg', '.jpeg', '.png')) %}
+                                <img src="{{ image_3_url }}" alt="Imagen 3" class="img-fluid rounded shadow mt-3">
+                            {% else %}
+                                <a href="{{ image_3_url }}" download="{{ horse.image_3 }}">Imagen 3 de {{horse.name}}</a>
+                            {% endif %}
+                        {% else %}
+                            <p>No hay ningún archivo cargado</p>
+                        {% endif %}
+                    </li>
+
+                    <li class="list-group-item"> <strong>Imagen 4:</strong>
+                        {% if horse.image_4 %}
+                            {% set image_4_url = file_url(horse.image_4) %}
+                            {% if horse.image_4.endswith(('.jpg', '.jpeg', '.png')) %}
+                                <img src="{{ image_4_url }}" alt="Imagen 4" class="img-fluid rounded shadow mt-3">
+                            {% else %}
+                                <a href="{{ image_4_url }}" download="{{ horse.image_4 }}">Imagen 4 de {{horse.name}}</a>
+                            {% endif %}
+                        {% else %}
+                            <p>No hay ningún archivo cargado</p>
+                        {% endif %}
+                    </li>
+
+                    <li class="list-group-item"> <strong>Imagen 5:</strong>
+                        {% if horse.image_5 %}
+                            {% set image_5_url = file_url(horse.image_5) %}
+                            {% if horse.image_5.endswith(('.jpg', '.jpeg', '.png')) %}
+                                <img src="{{ image_5_url }}" alt="Imagen 5" class="img-fluid rounded shadow mt-3">
+                            {% else %}
+                                <a href="{{ image_5_url }}" download="{{ horse.image_5 }}">Imagen 5 de {{horse.name}}</a>
+                            {% endif %}
+                        {% else %}
+                            <p>No hay ningún archivo cargado</p>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <a href="{{ url_for('horses.show', horse=horse, id_horse=id_horse) }}" class="btn btn-outline-primary">Volver</a>
+        </div>
+    </div>
+{% endblock %}

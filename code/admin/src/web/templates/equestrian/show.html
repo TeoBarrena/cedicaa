@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Ver Caballo{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center mt-4 mb-4">Detalles del Caballo</h1>
+    
+    <div class="card col-md-6 mx-auto">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="card-title mb-0">{{ horse.name }}</h2>
+            <div>
+                {% if check_permission(session,"equestrian_update") %}
+                    <a href="{{ url_for('horses.update', id_horse=horse.id) }}" class="btn btn-primary">Editar</a>
+                {% endif %}
+                {% if check_permission(session,"equestrian_destroy") %}
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{{ url_for('horses.destroy', id_horse=horse.id) }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                        </svg>
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+        <div class="card-body">
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Fecha de Nacimiento:</strong> {{ horse.birthdate.strftime('%d/%m/%Y') }}</li>
+                <li class="list-group-item"><strong>Género:</strong> {{ horse.gender }}</li>
+                <li class="list-group-item"><strong>Raza:</strong> {{ horse.breed }}</li>
+                <li class="list-group-item"><strong>Pelaje:</strong> {{ horse.fur }}</li>
+                <li class="list-group-item"><strong>Modo de Adquisición:</strong> {{ horse.acquisition }}</li>
+                <li class="list-group-item"><strong>Fecha de Entrada:</strong> {{ horse.entry_date.strftime('%d/%m/%Y') }}</li>
+                <li class="list-group-item"><strong>Sede Asignada:</strong> {{ horse.assigned_headquarters }}</li>
+                <li class="list-group-item"><strong>Tipo de Jinete:</strong> {{ horse.rider_type }}</li>
+                <li class="list-group-item"><strong>Entrenadores y Conductores Asociados:</strong>
+                    {% for employee in horse.employees %}
+                        <div>{{ employee.name }} {{ employee.lastname }}, {{ employee.profession }}</div>
+                    {% endfor %}
+                </li>
+            </ul>
+            <div class="mt-3">
+                <a href="{{ url_for('horses.show_files', id_horse=horse.id, horse=horse) }}" class="btn btn-success w-100">Ver archivos</a>
+            </div>
+        </div>
+    </div>
+    <div>
+        <a href="{{ url_for('horses.index') }}" class="btn btn-outline-primary">Volver</a>
+    </div>
+</div>
+{% endblock %}

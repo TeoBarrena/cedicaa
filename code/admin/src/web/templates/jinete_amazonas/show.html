@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Ver Jinete{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center mt-4 mb-4">Detalles del Jinete o Amazona</h1>
+    
+    <div class="card col-md-6 mx-auto">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="card-title mb-0">{{ rider.first_name }} {{ rider.last_name }}</h2>
+            <a href="{{ url_for('jinete_amazonas.update_rider', rider_id=rider.id) }}" class="btn btn-primary">Editar Jinete</a>
+        </div>
+        <div class="card-body">
+            <ul class="list-group">
+                <li class="list-group-item"><strong>DNI:</strong> {{ rider.dni }}</li>
+                <li class="list-group-item"><strong>Fecha de Nacimiento:</strong> {{ rider.birth_date.strftime('%d/%m/%Y') }}</li>
+                <li class="list-group-item"><strong>Edad:</strong> {{ rider.age }}</li>
+                <li class="list-group-item"><strong>Localidad de Nacimiento:</strong> {{ rider.town_of_birth.name }}, {{ rider.town_of_birth.province.name }}</li>
+                <li class="list-group-item"><strong>Domicilio Actual:</strong> {{ rider.address }} {{ rider.number }} {{ rider.apartment if rider.apartment }}, {{ rider.town.name }}, {{ rider.town.province.name }}</li>
+                <li class="list-group-item"><strong>Teléfono actual:</strong> {{ rider.phone }}</li>
+                <li class="list-group-item"><strong>Contacto de Emergencia:</strong> {{ rider.emergency_contact }}</li>
+                <li class="list-group-item"><strong>Teléfono de Emergencia:</strong> {{ rider.emergency_phone }}</li>
+                <li class="list-group-item"><strong>Beca:</strong> {{ rider.scholarship_notes if rider.scholarship else 'No está becado' }}</li>
+                <li class="list-group-item"><strong>¿Posee Certificado de Discapacidad?:</strong> {{ 'Sí' if rider.has_disability_certificate else 'No' }}</li>
+                <li class="list-group-item"><strong>Diagnóstico:</strong> {{ rider.other_diagnosis if rider.diagnosis == 'OTRO' else rider.diagnosis }}</li>
+                <li class="list-group-item"><strong>Tipo de Discapacidad:</strong> {{ rider.disability_type }}</li>
+                <li class="list-group-item"><strong>Asignación Familiar que percibe:</strong> {{ rider.allowance_type }}</li>
+                <li class="list-group-item"><strong>Pension que recibe:</strong> {{ rider.pension_type if rider.pension else "No recibe ninguna pension" }}</li> 
+                
+                <li class="list-group-item">
+                    <strong>SITUACIÓN PREVISIONAL:</strong>
+                    <ul>
+                        <li class="list-group-item"><strong>Obra Social:</strong> {{ rider.social_security }}</li>
+                        <li class="list-group-item"><strong>Nº Afiliado:</strong> {{ rider.member_number }}</li>
+                        <li class="list-group-item"><strong>Curatela:</strong>{{ rider.social_security_notes if rider.cure else "No posee Curatela" }}</li>
+                    </ul>
+                </li>
+                <li class="list-group-item">
+                    <strong>SITUACIÓN PREVISIONAL:</strong>
+                    <ul>
+                        <li class="list-group-item"><strong>Nombre de la Institución</strong> {{ rider.school.name }}</li>
+                        <li class="list-group-item"><strong>Dirección</strong> {{ rider.school.address }}</li>
+                        <li class="list-group-item"><strong>Teléfono:</strong> {{ rider.school.phone }}</li>
+                        <li class="list-group-item"><strong>Grado / año actual:</strong> {{ rider.school.current_grade }}</li>
+                        {% if rider.school.school_notes %}
+                            <li class="list-group-item"><strong>Observaciones:</strong> {{ rider.school.school_notes }}</li>
+                        {% endif %}
+                    </ul>
+                </li>
+
+                <li class="list-group-item"><strong>Profesionales que lo atienden:</strong> {{ rider.professionals or 'No especificado' }}</li>
+                
+                <li class="list-group-item">
+                    <strong>Datos del Familiar 1:</strong>
+                    <ul>
+                        <li><strong>Relación:</strong> {{ rider.relative1.relationship }}</li>
+                        <li><strong>Nombre:</strong> {{ rider.relative1.first_name }}</li>
+                        <li><strong>Apellido:</strong> {{ rider.relative1.last_name }}</li>
+                        <li><strong>DNI:</strong> {{ rider.relative1.dni }}</li>
+                        <li><strong>Dirección:</strong> {{ rider.relative1.address }}</li>
+                        <li><strong>Teléfono móvil:</strong> {{ rider.relative1.mobile }}</li>
+                        <li><strong>Email:</strong> {{ rider.relative1.email }}</li>
+                        <li><strong>Educación:</strong> {{ rider.relative1.education }}</li>
+                        <li><strong>Ocupación:</strong> {{ rider.relative1.occupation }}</li>
+                    </ul>
+                </li>
+    
+                {% if rider.relative2 %}
+                <li class="list-group-item">
+                    <strong>Datos del Familiar 2:</strong>
+                    <ul>
+                        <li><strong>Relación:</strong> {{ rider.relative2.relationship }}</li>
+                        <li><strong>Nombre:</strong> {{ rider.relative2.first_name }}</li>
+                        <li><strong>Apellido:</strong> {{ rider.relative2.last_name }}</li>
+                        <li><strong>DNI:</strong> {{ rider.relative2.dni }}</li>
+                        <li><strong>Dirección:</strong> {{ rider.relative2.address }}</li>
+                        <li><strong>Teléfono móvil:</strong> {{ rider.relative2.mobile }}</li>
+                        <li><strong>Email:</strong> {{ rider.relative2.email }}</li>
+                        <li><strong>Educación:</strong> {{ rider.relative2.education }}</li>
+                        <li><strong>Ocupación:</strong> {{ rider.relative2.occupation }}</li>
+                    </ul>
+                </li>
+                {% endif %}
+                <li class="list-group-item">
+                    <strong>TRABAJO EN LA INSTITUCIÓN:</strong>
+                    <ul>
+                        <li class="list-group-item"><strong>Propuesta de trabajo institucionaL:</strong> {{ rider.proposal_type }}</li>
+                        <li class="list-group-item"><strong>Condición:</strong> {{ rider.condition }}</li>
+                        <li class="list-group-item"><strong>Sede:</strong> {{ rider.location }}</li>
+                        <li class="list-group-item"><strong>Jornadas Seleccionadas:</strong> {{ rider.days }}</li>
+                        <li class="list-group-item"><strong>Profesionales que lo atienden:</strong>
+                        <ul>
+                            <li><strong>Terapeuta:</strong> {{ rider.therapist.name }} {{ rider.therapist.lastname }}</li>
+                            <li><strong>Conductor:</strong> {{ rider.driver.name }} {{ rider.driver.lastname }}</li>
+                            <li><strong>Caballo:</strong> {{ rider.horse.name }}</li>
+                            <li><strong>Auxiliar de Pista:</strong> {{ rider.assistant.name }} {{ rider.assistant.lastname }}</li>
+                        </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a href="{{ url_for('jinete_amazonas.list_riders') }}" class="btn btn-outline-primary">Volver</a>
+</div>
+{% endblock %}

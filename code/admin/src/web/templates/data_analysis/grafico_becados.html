@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Métricas | J&A Becados{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+
+{% block content %}
+    <h1 class="text-center">Distribución de Jinetes y Amazonas Becados</h1>
+    {{ graph_html|safe }}
+{% endblock %}

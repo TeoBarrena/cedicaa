@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Métricas | Tipos de Discapacidad{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+
+{% block content %}
+    <h1 class="text-center">Distribución de Jinetes y Amazonas por tipo de discapacidad</h1>
+    {{ graph_html|safe }}
+{% endblock %}

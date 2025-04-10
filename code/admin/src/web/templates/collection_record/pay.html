@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Completar Pago{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-4 mb-4">Completar Pago para {{ collection_record.rider.first_name }} {{ collection_record.rider.last_name }}</h1>
+
+    <form method="POST" action="{{ url_for('collection_record.up_to_date', collection_id=collection_record.id) }}">
+       
+        <!-- Medio de Pago -->
+        <div class="mb-3" id="payment_method_container">
+            <label for="payment_method" class="form-label">Medio de Pago</label>
+            <select id="payment_method" name="payment_method" class="form-select">
+                <option value="" disabled selected>Seleccione un medio de pago</option>
+                <option value="Efectivo">Efectivo</option>
+                <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+                <option value="Tarjeta de Débito">Tarjeta de Débito</option>
+                <option value="OTRO">OTRO</option>
+            </select>
+        </div>
+        <div class="mb-3" id="other_payment_method_container" style="display: none;">
+            <label for="other_payment_method" class="form-label">Otro medio de pago:</label>
+            <textarea id="other_payment_method" name="other_payment_method" class="form-control" rows="3"></textarea>
+        </div>
+
+        <!-- Quien recibe el dinero -->
+        <div class="mb-3">
+            <label for="received_by_id" class="form-label">Recibido por</label>
+            <select id="received_by_id" name="received_by_id" class="form-select" required>
+                <option value="" disabled selected>Seleccione un receptor</option>
+                {% for employee in employees %}
+                    <option value="{{ employee.id }}">{{ employee.name }} {{ employee.lastname }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Observaciones -->
+        <div class="mb-3">
+            <label for="notes" class="form-label">Observaciones</label>
+            <textarea id="notes" name="notes" class="form-control" rows="3"></textarea>
+        </div>
+
+        <!-- Botones -->
+        <div class="mt-4">
+            <button type="submit" class="btn btn-success">Completar Pago</button>
+            <a href="{{ url_for('collection_record.index') }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var paymentMethodSelect = document.getElementById('payment_method');
+        var otherPaymentMethodContainer = document.getElementById('other_payment_method_container');
+        var otherPaymentMethodField = document.getElementById('other_payment_method');
+
+        // Escuchar el evento "change" del select
+        paymentMethodSelect.addEventListener('change', function () {
+            // Mostrar el campo de "Otro medio de pago" solo si se selecciona "OTRO" y hacerlo requerido
+            if (paymentMethodSelect.value === 'OTRO') {
+                otherPaymentMethodContainer.style.display = 'block';
+                otherPaymentMethodField.setAttribute('required', 'required');
+            } else {
+                otherPaymentMethodContainer.style.display = 'none';
+                otherPaymentMethodField.removeAttribute('required');
+            }
+        });
+    });
+</script>
+
+
+{% endblock %}

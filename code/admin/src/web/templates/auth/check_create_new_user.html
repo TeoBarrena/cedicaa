@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Crear Usuario{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-center align-items-center vh-50">
+    <div class="card shadow-lg p-4" style="width: 100%; max-width: 500px; border-radius: 15px;">
+        <form action="{{ url_for('auth.check_create_new_user') }}" method="post">
+            <div class="card-header bg-primary text-white text-center">
+                <h3>Crear Usuario</h3>
+            </div>
+            <div class="card-body">
+                <p class="alert alert-info">El email con el que ingresaste <strong>{{ email }}</strong> está asociado a un empleado que no tiene un usuario en el sistema. ¿Desea crear un usuario con la siguiente información?</p>
+    
+                <div class="form-group mb-3">
+                    <b>Cambie en caso de querer usar otro Email</b> <br>
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Ingresa el email" value="{{ email }}" required>
+                </div>
+    
+                <div class="form-group mb-3">
+                    <label for="password">Contraseña</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Ingresa la contraseña"  required>
+                </div>
+    
+                <div class="mb-3">
+                    <label for="role" class="form-label">Rol</label>
+                    <div class="form-control-plaintext border rounded px-2">Ninguno</div>
+                </div>
+    
+                <div class="mb-3">
+                    <label for="alias" class="form-label">Alias</label>
+                    <input type="text" class="form-control" id="alias" name="alias" placeholder="Elegi tu alias" required>
+                </div>
+    
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle"></i> Crear Usuario
+                    </button>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

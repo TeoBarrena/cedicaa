@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Consultas{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h1 class="text-secondary">Listado de Consultas</h1>
+    </div>
+
+    <form method="GET" action="{{ url_for('messages.index') }}" class="mb-3">
+        <div class="row align-items-end">
+            <!-- Filtro de email -->
+            <div class="col-md-3">
+                <label for="email" class="form-label">Buscar por email</label>
+                <input type="text" name="email" id="email" class="form-control" placeholder="Email" value="{{ request.args.get('email', '') }}">
+            </div>
+            <!-- Filtro de estado -->
+            <div class="col-md-2">
+                <label for="state" class="form-label">Estado</label>
+                <select name="state" id="state" class="form-control">
+                    <option value="">Todos</option>
+                    {% for key, value in states_translations.items() %}
+                        <option value="{{ key }}" {{ 'selected' if request.args.get('state') == key else '' }}>
+                            {{ value }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Filtro de ordenamiento -->
+            <div class="col-md-2">
+                <label for="sort_by" class="form-label">Ordenar por</label>
+                <select name="sort_by" id="sort_by" class="form-control">
+                    <option value="inserted_at" {{ 'selected' if request.args.get('sort_by') == 'inserted_at' else '' }}>Fecha</option>
+                    <option value="email" {{ 'selected' if request.args.get('sort_by') == 'email' else '' }}>Email</option>
+                </select>
+            </div>
+            <!-- Filtro de orden ascendente/descendente -->
+            <div class="col-md-2">
+                <label for="order" class="form-label">Orden</label>
+                <select name="order" id="order" class="form-control">
+                    <option value="desc" {{ 'selected' if request.args.get('order') == 'desc' else '' }}>Descendente</option>
+                    <option value="asc" {{ 'selected' if request.args.get('order') == 'asc' else '' }}>Ascendente</option>
+                </select>
+            </div>
+            <!-- Botones de acción -->
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary mt-4">Buscar</button>
+                <a href="{{ url_for('messages.index') }}" class="btn btn-dark mt-4 ms-2">Limpiar filtros</a>
+            </div>
+        </div>
+        <!-- Consultas por página -->
+        <div class="row mt-2">
+            <div class="col-md-12 d-flex justify-content-end">
+                <label for="per_page" class="form-label me-2">Consultas por página:</label>
+                <select name="per_page" id="per_page" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                    <option value="2" {% if per_page == 2 %}selected{% endif %}>2</option>
+                    <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+                    <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+                    <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+                </select>
+            </div>
+        </div>
+    </form>
+
+    <!-- Tabla de consultas -->
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Titulo</th>
+                    <th>Email</th>
+                    <th>Consulta</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for message in messages_pagination.items %}
+                <tr>
+                    <td>{{ message.title }}</td>
+                    <td>{{ message.email }}</td>
+                    <td>{{ message.body[:10] }}...</td>
+                    <td>{{ states_translations[message.state]}}</td>
+                    <td>{{ message.inserted_at.strftime('%d/%m/%Y') }}</td>
+                    <td><a href="{{ url_for('messages.show', id_message=message.id) }}" class="btn btn-info btn-sm" >Ver</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Paginación -->
+    <div class="d-flex justify-content-center">
+        <nav aria-label="Paginación de consultas">
+            <ul class="pagination">
+                <!-- Botón para página anterior -->
+                <li class="page-item {% if not messages_pagination.has_prev %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for('messages.index', page=messages_pagination.prev_num, per_page=per_page, email=request.args.get('email', ''), state=request.args.get('state', ''), sort_by=sort_by, order=order) }}" aria-label="Anterior">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                <!-- Números de página -->
+                {% for page_num in messages_pagination.iter_pages() %}
+                    {% if page_num %}
+                        <li class="page-item {% if page_num == messages_pagination.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('messages.index', page=page_num, per_page=per_page, email=request.args.get('email', ''), state=request.args.get('state', ''), sort_by=sort_by, order=order) }}">{{ page_num }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                    {% endif %}
+                {% endfor %}
+                
+                <!-- Botón para página siguiente -->
+                <li class="page-item {% if not messages_pagination.has_next %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for('messages.index', page=messages_pagination.next_num, per_page=per_page, email=request.args.get('email', ''), state=request.args.get('state', ''), sort_by=sort_by, order=order) }}" aria-label="Siguiente">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+{% endblock %}

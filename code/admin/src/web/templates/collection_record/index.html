@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block title %}Cobros{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/delete.js') }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h1 class="text-secondary">Listado de Cobros</h1>
+        <div class="ms-auto">
+            <a href="{{ url_for('collection_record.create') }}" class="btn btn-primary">Añadir Cobro</a> 
+        </div>
+    </div>
+    
+    <form method="GET" action="{{ url_for('collection_record.index') }}" class="mt-3 mb-4">
+        <div class="row">
+            <div class="col-md-3">
+                <label for="rider_first_name" class="form-label">Nombre del J&A</label>
+                <input type="text" class="form-control" id="rider_first_name" name="rider_first_name" value="{{ request.args.get('rider_first_name', '') }}">
+            </div>
+
+            <div class="col-md-3">
+                <label for="rider_last_name" class="form-label">Apellido del J&A</label>
+                <input type="text" class="form-control" id="rider_last_name" name="rider_last_name" value="{{ request.args.get('rider_last_name', '') }}">
+            </div>
+
+            <div class="col-md-3">
+                <label for="received_by_first_name" class="form-label">Nombre del Receptor</label>
+                <input type="text" class="form-control" name="received_by_first_name" id="received_by_first_name" 
+                        value="{{ request.args.get('received_by_first_name', '') }}">
+            </div>
+
+            <div class="col-md-3">
+                <label for="received_by_last_name" class="form-label">Apellido del Receptor</label>
+                <input type="text" class="form-control" name="received_by_last_name" id="received_by_last_name" 
+                        value="{{ request.args.get('received_by_last_name', '') }}">
+            </div>
+
+            <div class="col-md-3">
+                <label for="payment_method" class="form-label">Medio de Pago</label>
+                <select class="form-select" name="payment_method" id="payment_method">
+                    <option value="">Todos</option>
+                    <option value="Efectivo" {% if request.args.get('payment_method') == 'Efectivo' %}selected{% endif %}>Efectivo</option>
+                    <option value="Tarjeta de Crédito" {% if request.args.get('payment_method') == 'Tarjeta de Crédito' %}selected{% endif %}>Tarjeta de Crédito</option>
+                    <option value="Tarjeta de Débito" {% if request.args.get('payment_method') == 'Tarjeta de Débito' %}selected{% endif %}>Tarjeta de Débito</option>
+                    <option value="Tarjeta de Débito" {% if request.args.get('payment_method') == 'OTRO' %}selected{% endif %}>OTRO</option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label for="start_date" class="form-label">Fecha de Inicio</label>
+                <input type="date" class="form-control" name="start_date" id="start_date" 
+                        value="{{ request.args.get('start_date', '') }}">
+            </div>
+
+            <div class="col-md-3">
+                <label for="end_date" class="form-label">Fecha de Fin</label>
+                <input type="date" class="form-control" name="end_date" id="end_date" 
+                        value="{{ request.args.get('end_date', '') }}">
+            </div>
+
+            <div class="col-md-3">
+                <label for="sort_order" class="form-label">Ordenar por Fecha</label>
+                <select class="form-select" name="sort_order" id="sort_order">
+                    <option value="desc" {% if request.args.get('sort_order', 'desc') == 'desc' %}selected{% endif %}>Descendente</option>
+                    <option value="asc" {% if request.args.get('sort_order', 'desc') == 'asc' %}selected{% endif %}>Ascendente</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-md-12 d-flex justify-content-end">
+                <label for="per_page" class="form-label me-2">Registros por página:</label>
+                <select name="per_page" id="per_page" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                    <option value="5" {% if per_page == 5 %}selected{% endif %}>5</option>
+                    <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+                    <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+                    <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+            <a href="{{ url_for('collection_record.index') }}" class="btn btn-dark">Limpiar filtros</a>
+        </div>
+    </form>
+
+    
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Jinete o Amazona</th>
+                <th>Monto</th>
+                <th>Estado</th>
+                <th>Observaciones</th>
+                <th>Recibido por</th>
+                <th>Medio de Pago</th>
+                <th>Fecha de Pago</th>
+                <th>Acciones</th> 
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in collection %}
+                <tr>
+                    <td>{{ payment.rider.first_name }} {{ payment.rider.last_name }}</td>
+                    <td>${{ payment.amount }}</td>
+                    {% if payment.is_pay %}
+                        <td>{{ "Pagado" }}</td>
+                    {% else %}
+                        <td>{{ "En deuda" }}</td>
+                    {% endif %} 
+                    <td>{{ payment.notes or 'Sin observaciones' }}</td>
+                    <td>{{ payment.received_by.name }} {{ payment.received_by.lastname }}</td>
+                    <td>{{ payment.payment_method or ''}}</td>
+                    {% if payment.is_pay %}
+                        <td>{{ payment.payment_date.strftime('%d/%m/%Y') }}</td>
+                    {% else %}
+                        <td>{{ '' }}</td>
+                    {% endif %} 
+                    <td class="d-flex justify-content-between">
+                        {% if payment.is_pay %}
+                            <a href="javascript:void(0);" class="btn btn-info btn-sm disabled" aria-disabled="true">Pagar</a>
+                        {% else %}
+                            <a href="{{ url_for('collection_record.up_to_date', collection_id=payment.id) }}" class="btn btn-info btn-sm">Pagar</a>
+                        {% endif %} 
+                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{{ url_for('collection_record.destroy', collection_id=payment.id) }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                            </svg>
+                        </button>                                                                                                                  
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+
+
+    <!-- Paginación -->
+    <div class="d-flex justify-content-center">
+        <nav aria-label="Paginación de cobros">
+            <ul class="pagination">
+                <!-- Botón para página anterior -->
+                <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for('collection_record.index', page=pagination.prev_num, rider_first_name=rider_first_name, rider_last_name=rider_last_name, payment_method=payment_method, received_by_first_name=received_by_first_name, received_by_last_name=received_by_last_name, start_date=start_date, end_date=end_date, sort_by=sort_by, order=order) }}" aria-label="Anterior">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                <!-- Números de página -->
+                {% for page_num in pagination.iter_pages() %}
+                    {% if page_num %}
+                        <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('collection_record.index', page=page_num, rider_first_name=rider_first_name, rider_last_name=rider_last_name, payment_method=payment_method, received_by_first_name=received_by_first_name, received_by_last_name=received_by_last_name, start_date=start_date, end_date=end_date, sort_by=sort_by, order=order) }}">{{ page_num }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                    {% endif %}
+                {% endfor %}
+
+                <!-- Botón para página siguiente -->
+                <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for('collection_record.index', page=pagination.next_num, rider_first_name=rider_first_name, rider_last_name=rider_last_name, payment_method=payment_method, received_by_first_name=received_by_first_name, received_by_last_name=received_by_last_name, start_date=start_date, end_date=end_date, sort_by=sort_by, order=order) }}" aria-label="Siguiente">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <a href="{{ url_for('home') }}" class="btn btn-outline-primary">Volver</a>
+</div>
+
+{% endblock %}
+
+

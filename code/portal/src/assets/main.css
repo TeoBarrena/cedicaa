@@ -1,0 +1,43 @@
+@import './base.css';
+
+body {
+  background: url('@/assets/photos/tranquera.png') no-repeat center center fixed;
+  background-size: cover;
+  font-family: Arial, sans-serif;
+}
+
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-weight: normal;
+  background-color: rgba(255, 255, 255, 0.738); /* Fondo semitransparente para el contenido */
+  border-radius: 10px;
+}
+
+a,
+.green {
+  text-decoration: none;
+  color: rgb(43, 94, 162);
+  transition: 0.4s;
+  padding: 3px;
+}
+
+@media (hover: hover) {
+  a:hover {
+    background-color: rgb(60, 116, 188);
+  }
+}
+
+@media (min-width: 1024px) {
+  body {
+    display: flex;
+    place-items: center;
+  }
+
+  #app {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 2rem;
+  }
+}

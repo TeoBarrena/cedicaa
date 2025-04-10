@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Métricas | Ranking de Programas{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+
+{% block content %}
+    <h1 class="text-center mb-3">Ranking de las propuestas de trabajo más solicitadas</h1>
+    <div class="container" style="max-width: 80%; margin: 0 auto;">
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Ranking</th>
+                    <th>Propuesta de Trabajo</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in table_data %}
+                    <tr>
+                        <td>{{ row['ranking'] }}</td>
+                        <td>{{ row['rider_type'] }}</td>
+                        <td>{{ row['count'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

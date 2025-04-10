@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Métricas | Deudores{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+
+{% block content %}
+    <h1 class="text-center mb-3">Reporte de J&A que adeudan pagos</h1>
+    <form method="GET" action="{{ url_for('reports.get_debtors_report') }}" class="mb-3">
+        <div class="row mt-2">
+            <div class="col-md-12 d-flex justify-content-end">
+                <label for="per_page" class="form-label me-2">Cantidad por página:</label>
+                <select name="per_page" id="per_page" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                    <option value="5" {% if per_page == 5 %}selected{% endif %}>5</option>
+                    <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+                    <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+                    <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+                </select>
+            </div>
+        </div>
+    </form>
+    <div class="container" style="max-width: 80%; margin: 0 auto;">
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Jinete/Amazona</th>
+                    <th>Deuda Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in table_data %}
+                    <tr>
+                        <td>{{ row['full_name'] }}</td>
+                        <td>$ {{ row['total_due'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Paginación-->
+    <div class="d-flex justify-content-center">
+        <nav aria-label="Paginación de deudores">
+            <ul class="pagination">
+                <!-- Botón para página anterior -->
+                <li class="page-item {% if not debtors_pagination.has_prev %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for( 'reports.get_debtors_report', page=debtors_pagination.prev_num, per_page=per_page) }}" aria-label="Anterior">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                <!-- Números de página -->
+                {% for page_num in debtors_pagination.iter_pages() %}
+                    {% if page_num %}
+                        <li class="page-item {% if page_num == debtors_pagination.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for( 'reports.get_debtors_report', page=page_num, per_page=per_page) }}">{{ page_num }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                    {% endif %}
+                {% endfor %}
+
+                <!-- Botón para página siguiente -->
+                <li class="page-item {% if not debtors_pagination.has_next %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for( 'reports.get_debtors_report', page=debtors_pagination.next_num, per_page=per_page) }}" aria-label="Siguiente">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Análisis de Datos{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-areas mt-5">
+    <div class="text-center mb-4">
+        <h3 class="admin-heading">Análisis de Datos</h3>
+    </div>
+
+    <div class="card-container">
+            <div class="card shadow-sm card-area border-0">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><i class="fas fa-users"></i> J&A Becados</h5>
+                    <p class="card-text">Gráfico de distribución de Jinetes y Amazonas becados.</p>
+                    <a href="{{ url_for('reports.grafico_becados') }}" class="btn btn-info">Ver Gráfico</a>
+                </div>
+            </div>
+
+            <div class="card shadow-sm card-area border-0">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><i class="fas fa-dollar-sign"></i> Ingresos</h5>
+                    <p class="card-text">Gráfico de ingresos mensuales.</p>
+                    <a href="{{ url_for('reports.grafico_ingresos') }}" class="btn btn-success">Ver Gráfico</a>
+                </div>
+            </div>
+
+            <div class="card shadow-sm card-area border-0">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><i class="fas fa-wheelchair"></i> Tipos de Discapacidad</h5>
+                    <p class="card-text">Distribución de los tipos de discapacidad de los J&A.</p>
+                    <a href="{{ url_for('reports.grafico_tipos_discapacidad') }}" class="btn btn-warning">
+                        Ver Gráfico</a>
+                </div>
+            </div>
+
+            <div class="card shadow-sm card-area border-0">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><i class="fas fa-exclamation-circle"></i> Deudores</h5>
+                    <p class="card-text">Reporte de personas que adeudan pagos.</p>
+                    <a href="{{ url_for('reports.get_debtors_report') }}" class="btn btn-danger">Ver Reporte</a>
+                </div>
+            </div>
+
+            <div class="card shadow-sm card-area border-0">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><i class="fas fa-chart-line"></i> Programas</h5>
+                    <p class="card-text">Ranking de propuestas de trabajo de los Jinetes y Amazonas.</p>
+                    <a href="{{ url_for('reports.get_programs_ranking') }}" class="btn btn-primary"> Ver Reporte</a>
+                </div>
+            </div>
+
+            <div class="card shadow-sm card-area border-0">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><i class="fas fa-tasks"></i> Profesionales</h5>
+                    <p class="card-text">Distribución de la carga de trabajo de los profesionales.</p>
+                    <a href="{{ url_for('reports.get_professional_work') }}" class="btn btn-secondary">Ver Reporte</a>
+                </div>
+            </div>
+    </div>
+</div>
+
+{% endblock %}

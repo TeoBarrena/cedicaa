@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}Ver Archivos{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="text-center mt-4 mb-4">Archivos del Caballo</h1>
+        <form action="{{ url_for('horses.update_files', id_horse=id_horse) }}" method="POST" class="col-md-6 mx-auto" enctype="multipart/form-data"> 
+            
+            <div class="form-group mb-3">
+                <label for="general_information" class="form-label">Ficha General del Caballo</label>
+                <input type="file" name="general_information" id="general_information" class="form-control">
+                {% if horse.general_information %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="form-text text-muted">Archivo existente: {{ horse.general_information }}</small>
+                        <div>
+                            <input type="checkbox" name="delete_general_information" id="delete_general_information">
+                            <label for="delete_general_information" class="ms-2">Eliminar</label>
+                        </div>
+                    </div>
+                {% else %}
+                    <small class="form-text text-muted">Seleccione un archivo para la ficha general del caballo.</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="training_schedule" class="form-label">Planificación de Entrenamiento</label>
+                <input type="file" name="training_schedule" id="training_schedule" class="form-control">
+                {% if horse.training_schedule %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="form-text text-muted">Archivo existente: {{ horse.training_schedule }}</small>
+                        <div>
+                            <input type="checkbox" name="delete_training_schedule" id="delete_training_schedule">
+                            <label for="delete_training_schedule" class="ms-2">Eliminar</label>
+                        </div>
+                    </div>
+                {% else %}
+                    <small class="form-text text-muted">Seleccione un archivo para la planificación de entrenamiento.</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="progress_report" class="form-label">Informe de Evolución</label>
+                <input type="file" name="progress_report" id="progress_report" class="form-control">
+                {% if horse.progress_report %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="form-text text-muted">Archivo existente: {{ horse.progress_report }}</small>
+                        <div>
+                            <input type="checkbox" name="delete_progress_report" id="delete_progress_report">
+                            <label for="delete_progress_report" class="ms-2">Eliminar</label>
+                        </div>
+                    </div>
+                {% else %}
+                    <small class="form-text text-muted">Seleccione un archivo para el informe de evolución.</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="vet_records" class="form-label">Registro Veterinario</label>
+                <input type="file" name="vet_records" id="vet_records" class="form-control">
+                {% if horse.vet_records %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="form-text text-muted">Archivo existente: {{ horse.vet_records }}</small>
+                        <div>
+                            <input type="checkbox" name="delete_vet_records" id="delete_vet_records">
+                            <label for="delete_vet_records" class="ms-2">Eliminar</label>
+                        </div>
+                    </div>
+                {% else %}
+                    <small class="form-text text-muted">Seleccione un archivo para el registro veterinario.</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="image_1" class="form-label">Imagen 1</label>
+                <input type="file" name="image_1" id="image_1" class="form-control">
+                {% if horse.image_1 %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="form-text text-muted">Archivo existente: {{ horse.image_1 }}</small>
+                        <div>
+                            <input type="checkbox" name="delete_image_1" id="delete_image_1">
+                            <label for="delete_image_1" class="ms-2">Eliminar</label>
+                        </div>
+                    </div>
+                {% else %}
+                    <small class="form-text text-muted">Seleccione un archivo para la imagen 1.</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="image_2" class="form-label">Imagen 2</label>
+                <input type="file" name="image_2" id="image_2" class="form-control">
+                {% if horse.image_2 %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="form-text text-muted">Archivo existente: {{ horse.image_2 }}</small>
+                        <div>
+                            <input type="checkbox" name="delete_image_2" id="delete_image_2">
+                            <label for="delete_image_2" class="ms-2">Eliminar</label>
+                        </div>
+                    </div>
+                {% else %}
+                    <small class="form-text text-muted">Seleccione un archivo para la imagen 2.</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="image_3" class="form-label">Imagen 3</label>
+                <input type="file" name="image_3" id="image_3" class="form-control">
+                {% if horse.image_3 %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="form-text text-muted">Archivo existente: {{ horse.image_3 }}</small>
+                        <div>
+                            <input type="checkbox" name="delete_image_3" id="delete_image_3">
+                            <label for="delete_image_3" class="ms-2">Eliminar</label>
+                        </div>
+                    </div>
+                {% else %}
+                    <small class="form-text text-muted">Seleccione un archivo para la imagen 3.</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="image_4" class="form-label">Imagen 4</label>
+                <input type="file" name="image_4" id="image_4" class="form-control">
+                {% if horse.image_4 %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="form-text text-muted">Archivo existente: {{ horse.image_4 }}</small>
+                        <div>
+                            <input type="checkbox" name="delete_image_4" id="delete_image_4">
+                            <label for="delete_image_4" class="ms-2">Eliminar</label>
+                        </div>
+                    </div>
+                {% else %}
+                    <small class="form-text text-muted">Seleccione un archivo para la imagen 4.</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="image_5" class="form-label">Imagen 5</label>
+                <input type="file" name="image_5" id="image_5" class="form-control">
+                {% if horse.image_5 %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="form-text text-muted">Archivo existente: {{ horse.image_5 }}</small>
+                        <div>
+                            <input type="checkbox" name="delete_image_5" id="delete_image_5">
+                            <label for="delete_image_5" class="ms-2">Eliminar</label>
+                        </div>
+                    </div>
+                {% else %}
+                    <small class="form-text text-muted">Seleccione un archivo para la imagen 5.</small>
+                {% endif %}
+            </div>
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('horses.show_files', id_horse=id_horse)}}" class="btn btn-outline-danger">Cancelar</a>
+                <button type="submit" class="btn btn-primary w-50">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

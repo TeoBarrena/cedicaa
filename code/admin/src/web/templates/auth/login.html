@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Iniciar Sesión{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-center align-items-center vh-50">
+    <div class="card p-4" style="width: 100%; max-width: 400px;">
+        <h2 class="text-center mb-4">Iniciar sesión</h2>
+        <form action="{{ url_for('auth.authenticate') }}" method="post">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña:</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
+            </div>
+            <!-- Solo el botón de Google -->
+            <div class="d-grid mb-3">
+                <a href="{{ url_for('auth.login_with_google') }}" class="btn btn-danger d-flex justify-content-center align-items-center">
+                    <img src="{{ url_for('static', filename='images/googlelogo.jpg') }}" alt="Google Logo" style="height: 20px; margin-right: 8px;">
+                    Iniciar sesión con Google
+                </a>
+            </div>
+            
+                
+            <div class="d-grid mb-3">
+                <button class="btn btn-primary" type="submit">Iniciar sesión</button>
+            </div>
+        </form>
+        
+    </div>
+</div>
+
+{% endblock %}

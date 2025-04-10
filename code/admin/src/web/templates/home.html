@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    
+    <div class="row">
+        <div class="col-12 text-center">
+            <h1 class="display-4">
+                Bienvenido {% if current_user() %}<b>{{ current_user().alias }}</b>{% endif %} a CEDICA
+            </h1>
+            <p class="lead">Centro de Equitación para Personas con Discapacidad y Carenciadas</p>
+            <p class="text-muted">Terapias y Actividades Asistidas con Caballos</p>
+            {% if current_user() %}
+                <h3 class="resource-management">
+                    Aquí puedes gestionar tus recursos:
+                </h3>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if is_authenticated(session) %}
+
+        <div class="admin-areas mt-5">
+            <div class="text-center mb-4">
+                <h3 class="admin-heading">Áreas de Administración</h3>
+            </div>
+
+            <div class="card-container">
+                {% if check_permission(session, "user_index") %}
+                    <div class="card shadow-sm card-area border-0">
+                        <div class="card-body text-center">
+                            <h5 class="card-title"><i class="fas fa-users"></i> Usuarios</h5>
+                            <p class="card-text">Gestión de usuarios registrados en la plataforma.</p>
+                            <a href="{{ url_for('users.index') }}" class="btn btn-info">Ver Usuarios</a>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if check_permission(session, "employee_index") %}
+                    <div class="card shadow-sm card-area border-0">
+                        <div class="card-body text-center">
+                            <h5 class="card-title"><i class="fas fa-briefcase"></i> Empleados</h5>
+                            <p class="card-text">Registro y consulta del personal.</p>
+                            <a href="{{ url_for('employee_cedica.index') }}" class="btn btn-success">Ver Empleados</a>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if check_permission(session, "equestrian_index") %}
+                    <div class="card shadow-sm card-area border-0">
+                        <div class="card-body text-center">
+                            <h5 class="card-title"><i class="fas fa-horse"></i> Caballos</h5>
+                            <p class="card-text">Consulta y administración de los caballos.</p>
+                            <a href="{{ url_for('horses.index') }}" class="btn btn-warning">Ver Caballos</a>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if check_permission(session, "payments_index") %}
+                    <div class="card shadow-sm card-area border-0">
+                        <div class="card-body text-center">
+                            <h5 class="card-title"><i class="fas fa-dollar-sign"></i> Pagos</h5>
+                            <p class="card-text">Gestión de pagos y otros gastos de la institución.</p>
+                            <a href="{{ url_for('payments_record.index') }}" class="btn btn-danger">Ver Pagos</a>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {# Módulo J&A (Jinetes y Amazonas) #}
+                {% if check_permission(session, "J&A_index") %}
+                    <div class="card shadow-sm card-area border-0">
+                        <div class="card-body text-center">
+                            <h5 class="card-title"><i class="fas fa-user-friends"></i> Jinetes y Amazonas</h5>
+                            <p class="card-text">Administración de Jinetes y Amazonas. <br>
+                                Visualiza y gestiona los registros individuales.</p>
+                            <a href="{{ url_for('jinete_amazonas.list_riders') }}" class="btn btn-primary">Ver J&A</a>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {# Registro de Cobros #}
+                {% if check_permission(session, "collection_index") %}
+                    <div class="card shadow-sm card-area border-0">
+                        <div class="card-body text-center">
+                            <h5 class="card-title"><i class="fas fa-receipt"></i> Registro de Cobros</h5>
+                            <p class="card-text">Registra y visualiza los cobros de Jinetes y Amazonas por fecha.</p>
+                            <a href="{{ url_for('collection_record.index') }}" class="btn btn-secondary">Ver Registro de Cobros</a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="text-center my-4">
+            <img src="{{ url_for('static', filename='images/logo_30_años.jpg') }}" alt="CEDICA 30 años" class="img-fluid">
+        </div>
+
+    {% else %}
+        <div class="text-center my-4">
+            <img src="{{ url_for('static', filename='images/logo_30_años.jpg') }}" alt="CEDICA 30 años" class="img-fluid">
+        </div>
+        <div class="mt-4 text-center">
+            <p class="lead">Para acceder a las áreas de administración, por favor inicia sesión.</p>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Iniciar Sesión</a>
+        </div>
+    {% endif %}
+    
+</div>
+{% endblock %}

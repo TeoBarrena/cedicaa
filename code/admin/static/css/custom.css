@@ -1,0 +1,86 @@
+/* Estilos para pantallas grandes */
+.dropdown-menu {
+    max-width: 200px !important;
+    left: auto !important;
+    right: 0 !important;
+}
+
+/* Estilos para pantallas pequeñas (cuando la barra de navegación se colapsa) */
+@media (max-width: 991.98px) { /* Este valor corresponde al breakpoint de Bootstrap para pantallas medianas */
+    .dropdown-menu {
+        right: auto !important;
+        left: 0 !important; /* Alinea el menú debajo del botón en pantallas pequeñas */
+    }
+}
+
+/* Fondo sutil para la sección de administración */
+.admin-areas {
+    background-color: #d8ebfd;
+    padding: 40px 20px;
+    border-radius: 15px;
+    margin-bottom: 40px;
+}
+
+/* Estilo de las tarjetas con efecto hover */
+.card-area {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 15px;
+}
+
+.card-area:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Espaciado entre las tarjetas */
+.card-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.admin-heading {
+    font-family: 'Poppins', sans-serif; /* Cambia la fuente según tu preferencia */
+    font-size: 28px; /* Ajusta el tamaño de la fuente */
+    color: #505ae9; /* Cambia a un color que combine con el tema de tu sitio */
+    text-transform: uppercase; /* Pone el texto en mayúsculas */
+    letter-spacing: 1px; /* Espaciado entre letras */
+    padding: 10px; /* Espacio alrededor del texto */
+    border-bottom: 2px solid #2b5ea2; /* Línea inferior para destacar el encabezado */
+    display: inline-block; /* Para centrar el borde */
+    transition: color 0.3s; /* Transición suave para el color */
+}
+
+/* Ajustes para pantallas medianas para admin-heading */
+@media (max-width: 768px) {
+    .admin-heading {
+        font-size: 24px; /* Tamaño de fuente reducido para tabletas y dispositivos pequeños */
+    }
+}
+
+/* Ajustes para pantallas pequeñas para admin-heading */
+@media (max-width: 576px) {
+    .admin-heading {
+        font-size: 20px; /* Tamaño de fuente más pequeño para móviles */
+        padding: 5px; /* Espaciado reducido */
+    }
+}
+
+.admin-heading:hover {
+    color: #1a3e78; /* Cambia el color al pasar el mouse */
+}
+
+.img-fluid {
+    /*border: 2px solid #2b5ea2;
+    border-radius: 10px;*/
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.resource-management {
+    font-family: 'Poppins', sans-serif; /* Fuente consistente */
+    font-size: 20px; /* Tamaño de fuente */
+    color: #2c3e50; /* Color consistente */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    margin-top: 10px; /* Espaciado superior para separación */
+}

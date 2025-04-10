@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Listado de Jinetes{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/delete.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+    
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h1 class="text-secondary">Listado de Jinetes y Amazonas</h1>
+        <div class="ms-auto">
+            <a href="{{ url_for('jinete_amazonas.create_rider') }}" class="btn btn-primary">Crear Jinete</a>
+        </div>
+    </div>
+
+    <form method="GET" action="{{ url_for('jinete_amazonas.list_riders') }}" class="mb-3">
+        <div class="row align-items-end">
+            <div class="col-md-3">
+                <label for="search" class="form-label">Buscar</label>
+                <input type="text" name="search" id="search" class="form-control" placeholder="Nombre, Apellido, DNI, Profesionales" value="{{ request.args.get('search', '') }}">
+            </div>
+            <div class="col-md-2">
+                <label for="order_by" class="form-label">Ordenar por</label>
+                <select name="order_by" id="order_by" class="form-control">
+                    <option value="first_name" {{ 'selected' if request.args.get('order_by') == 'first_name' else '' }}>Nombre</option>
+                    <option value="last_name" {{ 'selected' if request.args.get('order_by') == 'last_name' else '' }}>Apellido</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="order_dir" class="form-label">Orden</label>
+                <select name="order_dir" id="order_dir" class="form-control">
+                    <option value="asc" {{ 'selected' if request.args.get('order_dir') == 'asc' else '' }}>Ascendente</option>
+                    <option value="desc" {{ 'selected' if request.args.get('order_dir') == 'desc' else '' }}>Descendente</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary mt-4">Buscar</button>
+                <a href="{{ url_for('jinete_amazonas.list_riders') }}" class="btn btn-dark mt-4 ms-2">Limpiar filtros</a>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-12 d-flex justify-content-end">
+                    <label for="per_page" class="form-label me-2">Jinetes/Amazonas por página:</label>
+                    <select name="per_page" id="per_page" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                        <option value="5" {% if per_page == 5 %}selected{% endif %}>5</option>
+                        <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+                        <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+                        <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>DNI</th>
+                    <th>Profesionales</th>
+                    <th>Acciones</th> 
+                </tr>
+            </thead>
+            <tbody>
+                {% for rider in riders_pagination.items %}
+                <tr>
+                    <td>{{ rider.first_name }}</td>
+                    <td>{{ rider.last_name }}</td>
+                    <td>{{ rider.dni }}</td>
+                    <td>{{ rider.professionals }}</td>
+                    <td class="d-flex justify-content-between">
+                        <a href="{{ url_for('jinete_amazonas.view_rider', rider_id=rider.id) }}" class="btn btn-info btn-sm">Ver Detalle</a>
+                        <a href="{{ url_for('jinete_amazonas.view_documents', rider_id=rider.id) }}" class="btn btn-secondary btn-sm">Ver Documentos</a>
+                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{{ url_for('jinete_amazonas.destroy_rider', rider_id=rider.id) }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                            </svg>
+                            Eliminar
+                        </button> 
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Paginación-->
+    <div class="d-flex justify-content-center">
+        <nav aria-label="Paginación de jinetes">
+            <ul class="pagination">
+                <!-- Botón para página anterior -->
+                <li class="page-item {% if not riders_pagination.has_prev %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for('jinete_amazonas.list_riders', page=riders_pagination.prev_num, search=search_query, order_by=order_by, order_dir=order_dir) }}" aria-label="Anterior">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                <!-- Números de página -->
+                {% for page_num in riders_pagination.iter_pages() %}
+                    {% if page_num %}
+                        <li class="page-item {% if page_num == riders_pagination.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('jinete_amazonas.list_riders', page=page_num, search=search_query, order_by=order_by, order_dir=order_dir) }}">{{ page_num }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                    {% endif %}
+                {% endfor %}
+
+                <!-- Botón para página siguiente -->
+                <li class="page-item {% if not riders_pagination.has_next %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for('jinete_amazonas.list_riders', page=riders_pagination.next_num, search=search_query, order_by=order_by, order_dir=order_dir) }}" aria-label="Siguiente">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <a href="{{ url_for('home') }}" class="btn btn-outline-primary">Volver</a>
+{% endblock %}
+

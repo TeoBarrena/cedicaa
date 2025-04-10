@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+
+{% block title %}Listado de empleados CEDICA{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+    <h1 class="text-secondary">Empleados CEDICA</h1>
+    
+    <div class="d-flex justify-content-between mb-2">
+        
+        
+        <form method="GET" action="{{ url_for('employee_cedica.index') }}" class="mb-3">
+            <div class="row align-items-end">
+                <!-- Campos ocultos para preservar valores de filtros -->
+                <input type="hidden" name="per_page" value="{{ request.args.get('per_page', per_page) }}">
+                
+
+
+                <!-- Filtro de email -->
+                <div class="col-md-2">
+                    <label for="email" class="form-label">Buscar por email</label>
+                    <input type="text" name="email" id="email" class="form-control" placeholder="Email" value="{{ request.args.get('email', '') }}">
+                </div>
+                <!-- Filtro de nombre -->
+                <div class="col-md-2">
+                    <label for="name" class="form-label">Buscar por nombre</label>
+                    <input type="text" name="name" id="name" class="form-control" placeholder="Nombre" value="{{ request.args.get('name', '') }}">
+                </div>
+                <!-- Filtro de apellido -->
+                <div class="col-md-2">
+                    <label for="lastname" class="form-label">Buscar por apellido</label>
+                    <input type="text" name="lastname" id="lastname" class="form-control" placeholder="Apellido" value="{{ request.args.get('lastname', '') }}">
+                </div>
+                <!-- Filtro de DNI -->
+                <div class="col-md-2">
+                    <label for="dni" class="form-label">Buscar por DNI</label>
+                    <input type="number" name="dni" id="dni" class="form-control" placeholder="DNI" value="{{ request.args.get('dni', '') }}">
+                </div>
+                <!-- Filtro de Profesión -->
+                <div class="col-md-2">
+                    <label for="job_position" class="form-label">Buscar por posición de trabajo</label>
+                    <select class="form-control" id="job_position" name="job_position">
+                        <option value="">Seleccione una posición de trabajo</option>
+                        {% for job_position in job_positions %}
+                            <option value="{{ job_position }}" {% if request.args.get('job_position') == job_position %}selected{% endif %}>{{ job_position }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Filtro de usuario activo/bloqueado -->
+                <div class="col-md-1">
+                    <label for="active" class="form-label">Activo</label>
+                    <select name="active" id="active" class="form-control">
+                        <option value=""></option>
+                        <option value="1" {{ 'selected' if request.args.get('active') == '1' else '' }}>SI</option>
+                        <option value="0" {{ 'selected' if request.args.get('active') == '0' else '' }}>NO</option>
+                    </select>
+                </div>
+                
+                
+                <!-- Filtro de ordenamiento -->
+                <div class="col-md-2">
+                    <label for="sort_by" class="form-label">Ordenar por</label>
+                    <select name="sort_by" id="sort_by" class="form-control">
+                        <option value="email" {{ 'selected' if sort_by == 'email' else '' }}>Email</option>
+                        <option value="inserted_at" {{ 'selected' if sort_by == 'inserted_at' else '' }}>Fecha de creación</option>
+                    </select>
+                </div>
+                <!-- Orden (Ascendente o Descendente) -->
+                <div class="col-md-2">
+                    <label for="order" class="form-label">Orden</label>
+                    <select name="order" id="order" class="form-control">   
+                        <option value="asc" {{ 'selected' if order == 'asc' else '' }}>Ascendente</option>
+                        <option value="desc" {{ 'selected' if order == 'desc' else '' }}>Descendente</option>
+                    </select>
+                </div>
+        
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">Buscar</button>
+                    <a href="{{ url_for('employee_cedica.index') }}" class="btn btn-dark mt-4 ms-2">Limpiar filtros</a>
+                </div>
+            </div>
+        </form>        
+    </div>
+
+    <div class="d-flex justify-content-between mb-2">
+        <div class="d-flex align-items-center">
+            <!-- Botón de agregar empleado -->
+            <a href="{{ url_for('employee_cedica.create') }}" class="btn btn-primary me-2">Agregar empleado</a>
+        </div>
+        <form method="GET" action="{{ url_for('employee_cedica.index') }}" class="mb-3">
+            <!-- Campo oculto para mantener los valores de los filtros -->
+            <input type="hidden" name="email" value="{{ request.args.get('email', '') }}">
+            <input type="hidden" name="name" value="{{ request.args.get('name', '') }}">
+            <input type="hidden" name="lastname" value="{{ request.args.get('lastname', '') }}">
+            <input type="hidden" name="dni" value="{{ request.args.get('dni', '') }}">
+            <input type="hidden" name="job_position" value="{{ request.args.get('job_position', '') }}">
+            <input type="hidden" name="sort_by" value="{{ request.args.get('sort_by', 'email') }}">
+            <input type="hidden" name="order" value="{{ request.args.get('order', 'asc') }}">
+            <div class="row align-items-center">
+                <div class="col-md-12 d-flex justify-content-end">
+                    <label for="per_page" class="form-label me-2">Empleados por página:</label>
+                    <select name="per_page" id="per_page" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                        <option value="5" {% if per_page == 5 %}selected{% endif %}>5</option>
+                        <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+                        <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+                        <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+        
+    </div>
+    
+    <!-- Tabla de Empleados -->
+    <div class="table-responsive mt-3">
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    
+                    <th>DNI</th>
+                    <th>Email</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Profesión</th>
+                    <th>Posición de trabajo</th>
+                    <th>Fecha de creación</th>
+                    <th>Activo</th>
+                    <th>Acciones</th> <!-- Columna para acciones -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for employee in employees_pagination.items %}
+                <tr>
+                    <td>{{ employee.dni }}</td>
+                    <td>{{ employee.email }}</td>
+                    <td>{{ employee.name }}</td>
+                    <td>{{ employee.lastname }}</td>
+                    <td>{{ employee.profession }}</td>
+                    <td>{{ employee.job_position }}</td>
+                    <td>{{ employee.inserted_at.strftime('%d/%m/%Y') }}</td>
+                    <td>{{ 'Sí' if employee.active else 'No' }}</td>
+                    <td>
+                        <a href="{{ url_for('employee_cedica.show', employee_id=employee.id) }}" class="btn btn-info btn-sm">Ver info.</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Paginación-->
+    <div class="d-flex justify-content-center">
+        <nav aria-label="Paginación de usuarios">
+            <ul class="pagination">
+                <!-- Botón para página anterior -->
+                <li class="page-item {% if not employees_pagination.has_prev %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('employee_cedica.index', page=employees_pagination.prev_num, per_page=per_page, email=email, active=active, role=role, sort_by=sort_by, order=order) }}" aria-label="Anterior">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                <!-- Números de página -->
+                {% for page_num in employees_pagination.iter_pages() %}
+                    {% if page_num %}
+                        <li class="page-item {% if page_num == employees_pagination.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('employee_cedica.index', page=page_num, per_page=per_page, email=email, active=active, role=role, sort_by=sort_by, order=order) }}">{{ page_num }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                    {% endif %}
+                {% endfor %}
+
+                <!-- Botón para página siguiente -->
+                <li class="page-item {% if not employees_pagination.has_next %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for('employee_cedica.index', page=employees_pagination.next_num, per_page=per_page, email=email, active=active, role=role, sort_by=sort_by, order=order) }}" aria-label="Siguiente">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+
+{% endblock %}

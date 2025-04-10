@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+
+{% block title %}Actualizar perfil de empleado{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+<!--HAY QUE AGREGAR BOTON MODIFICAR EMPLEADO-->
+<!--PONER FILTRO DE BUSQUEDA-->
+<div class="d-flex justify-content-center mt-5">
+    <div class="card" style="width: 30rem;">
+        <div class="card-body">
+            <h2 class="card-title text-center mb-4">Actualizar datos empleado</h2>
+            <form method="POST" action="{{ url_for('employee_cedica.update', employee_id=employee.id) }}" enctype="multipart/form-data">
+                
+                <div class="form-group mb-3">
+                    <label for="name">Nombre</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ employee.name }}">
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="lastname">Apellido</label>
+                    <input type="text" class="form-control" id="lastname" name="lastname" value="{{ employee.lastname }}" >
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="dni">DNI</label>
+                    <input type="number" class="form-control" id="dni" name="dni" value="{{ employee.dni }}" >
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="email">Email</label>
+                    <input type="text" class="form-control" id="email" name="email" value="{{ employee.email }}">
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="title" class="form-label">Titulo</label>
+                    {% if employee.title is not none %}
+                        <div class="alert alert-warning" role="alert">
+                            Atención: Este empleado ya tiene cargado un título.
+                        </div>
+                    {% endif %}
+                    <input type="file" name="title" id="title" class="form-control">
+                    <small class="form-text text-muted">Seleccione un archivo para el título.</small>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="dni_copy" class="form-label">Copia DNI</label>
+                    {% if employee.dni_copy is not none %}
+                        <div class="alert alert-warning" role="alert">
+                            Atención: Este empleado ya tiene cargado una copia del dni.
+                        </div>
+                    {% endif %}
+                    <input type="file" name="dni_copy" id="dni_copy" class="form-control">
+                    <small class="form-text text-muted">Seleccione un archivo para la copia del dni.</small>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="updated_cv" class="form-label">CV Actualizado</label>
+                    {% if employee.updated_cv is not none %}
+                        <div class="alert alert-warning" role="alert">
+                            Atención: Este empleado ya tiene cargado un cv.
+                        </div>
+                    {% endif %}
+                    <input type="file" name="updated_cv" id="updated_cv" class="form-control">
+                    <small class="form-text text-muted">Seleccione un archivo para el CV.</small>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="phone">Teléfono</label>
+                    <input type="text" class="form-control" id="phone" name="phone" value="{{ employee.phone}}">
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="province" class="form-label">Provincia</label>
+                    <select class="form-control" id="province" name="province" required onchange="updateTowns()">
+                        <option value="">Selecciona una provincia</option>
+                        {% for province, towns in provinces.items() %}
+                            <option value="{{ province }}" 
+                                {% if province == employee.town.province.name %} selected {% endif %}>
+                                {{ province }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="town_id" class="form-label">Ciudad</label>
+                    <select class="form-control" id="town_id" name="town_id">
+                        <option value="">Selecciona una ciudad</option>
+                        {% for town in provinces[employee.town.province.name] %}
+                            <option value="{{ town.id }}" 
+                                {% if town.id == employee.town_id %} selected {% endif %}>
+                                {{ town.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                
+                
+                <div class="form-group mb-3">
+                    <label for="address">Domicilio</label>
+                    <input type="text" class="form-control" id="address" name="address" value="{{ employee.address }}">
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="number">Número</label>
+                    <input type="number" class="form-control" id="number" name="number" value="{{ employee.number }}" >
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="departament">Departamento</label>
+                    <input type="text" class="form-control" id="departament" name="departament" value="{{ employee.departament }}">
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="profession" class="form-label">Profesión</label>
+                    <select class="form-control" id="profession" name="profession">
+                        {% for profession in professions %}
+                            <option value="{{ profession }}" 
+                                {% if profession == employee.profession %} selected {% endif %}>
+                                {{ profession }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="job_position" class="form-label">Posición Laboral</label>
+                    <select name="job_position" id="job_position" class="form-select">
+                        {% for job_position in job_positions %}
+                            <option value="{{ job_position }}" 
+                                {% if job_position == employee.job_position %} selected {% endif %}>
+                                {{ job_position }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="start_date" class="form-label">Fecha de Inicio</label>
+                    <input 
+                        type="date" 
+                        class="form-control" 
+                        id="start_date" 
+                        name="start_date" 
+                        max="{{ today.strftime('%Y-%m-%d') }}" 
+                        value="{{ employee.start_date.strftime('%Y-%m-%d') if employee.start_date else '' }}"
+                        onchange="updateTerminationDateMin()"
+                    >
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="termination_date" class="form-label">Fecha de Finalización</label>
+                    <input 
+                        type="date" 
+                        class="form-control" 
+                        id="termination_date" 
+                        name="termination_date" 
+                        min="{{ employee.start_date.strftime('%Y-%m-%d') if employee.start_date else '' }}" 
+                        value="{{ employee.termination_date.strftime('%Y-%m-%d') if employee.termination_date else '' }}"
+                    >
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="emergency_contact_name">Nombre de Contacto de Emergencia</label>
+                    <input type="text" class="form-control" id="emergency_contact_name" name="emergency_contact_name" value="{{ employee.emergency_contact_name}}">
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="emergency_contact_phone">Teléfono de Contacto de Emergencia</label>
+                    <input type="text" class="form-control" id="emergency_contact_phone" name="emergency_contact_phone" value="{{ employee.emergency_contact_phone }}">
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="social_work">Obra Social</label>
+                    <input type="text" class="form-control" id="social_work" name="social_work" value="{{ employee.social_work }}">
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="afilliate_number">Número de Afiliado</label>
+                    <input type="number" class="form-control" id="afilliate_number" name="afilliate_number" value="{{ employee.afilliate_number }}">
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="condition">Condición del Empleado</label>
+                    <select class="form-control" id="condition" name="condition">
+                        <option value="Voluntario" {% if employee.condition == 'Voluntario' %}selected{% endif %}>Voluntario</option>
+                        <option value="Personal Rentado" {% if employee.condition == 'Personal Rentado' %}selected{% endif %}>Personal Rentado</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="active">Activo</label>
+                    <input type="checkbox" class="form-check-input" id="active" name="active" {% if employee.active %}checked{% endif %}>
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary">Actualizar Empleado</button>
+                    <a href="{{ url_for('employee_cedica.index') }}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const provinceTowns = {{ provinces|tojson }};
+    
+    function updateTowns() {
+        const provinceSelect = document.getElementById('province');
+        const townSelect = document.getElementById('town_id');
+        const selectedProvince = provinceSelect.value;
+        
+        // Limpiar las opciones previas
+        townSelect.innerHTML = '<option value="">Selecciona una ciudad</option>';
+
+        // Verificar si hay una provincia seleccionada y cargar las ciudades correspondientes
+        if (selectedProvince && provinceTowns[selectedProvince]) {
+            const towns = provinceTowns[selectedProvince];
+
+            towns.forEach(town => {
+                // Aquí se asume que cada 'town' es un objeto con 'id' y 'name'
+                const option = document.createElement('option');
+                option.value = town.id; // Usar el ID como valor
+                option.textContent = town.name; // Mostrar el nombre de la ciudad
+                townSelect.appendChild(option);
+            });
+        }
+    }
+</script>
+<script>
+    function updateTerminationDateMin() {
+        const startDate = document.getElementById('start_date').value;
+        const terminationDate = document.getElementById('termination_date');
+        
+        // Si se selecciona una fecha de inicio, establece su valor como el mínimo de termination_date
+        if (startDate) {
+            terminationDate.min = startDate;
+            
+            // Si la fecha de finalización es menor que la fecha de inicio, ajusta la fecha de finalización
+            if (terminationDate.value && terminationDate.value < startDate) {
+                terminationDate.value = "";
+                alert("La fecha de finalización no puede ser anterior a la fecha de inicio.");
+            }
+        }
+    }
+</script>
+{% endblock %}
+

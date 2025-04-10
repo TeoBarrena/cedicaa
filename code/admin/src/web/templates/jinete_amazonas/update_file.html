@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Documento{% endblock %}
+
+{% block content %}
+<h3>Editar Documento</h3>
+<form method="POST" action="{{ url_for('jinete_amazonas.update_document', document_id=document.id) }}" enctype="multipart/form-data">
+    
+    <div class="mb-3">
+        <label for="title" class="form-label">Título</label>
+        <input type="text" class="form-control" id="title" name="title" value="{{ document.title }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="document_type" class="form-label">Tipo de Documento</label>
+        <select class="form-select" id="document_type" name="document_type" required>
+            <option value="entrevista" {% if document.document_type == 'entrevista' %}selected{% endif %}>Entrevista</option>
+            <option value="evaluación" {% if document.document_type == 'evaluación' %}selected{% endif %}>Evaluación</option>
+            <option value="planificaciones" {% if document.document_type == 'planificaciones' %}selected{% endif %}>Planificaciones</option>
+            <option value="evolución" {% if document.document_type == 'evolución' %}selected{% endif %}>Evolución</option>
+            <option value="crónicas" {% if document.document_type == 'crónicas' %}selected{% endif %}>Crónicas</option>
+            <option value="documental" {% if document.document_type == 'documental' %}selected{% endif %}>Documental</option>
+        </select>
+    </div>
+    
+    {% if document.is_external %}
+        <div class="mb-3">
+            <label for="file_url" class="form-label">Enlace Externo</label>
+            <input type="url" class="form-control" id="file_url" name="file_url" value="{{ document.file_path if document.is_external }}">
+        </div>
+    {% else %}
+        <div class="mb-3">
+            <label for="file" class="form-label">Subir Nuevo Archivo</label>
+            <input type="file" class="form-control" id="file" name="file">
+        </div>
+    {% endif %}
+
+    <button type="submit" class="btn btn-success">Guardar Cambios</button>
+    <a href="{{ url_for('jinete_amazonas.view_documents', rider_id=document.rider_id) }}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

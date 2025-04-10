@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+    {% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='flash.css') }}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    {% endblock %}
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+    {% include 'delete_modal.html' %}
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #2b5ea2;">
+        {% block navbar %}
+        <div class="container-fluid">
+            <!-- Logo -->
+            <a class="navbar-brand ms-4" href="{{ url_for('home') }}">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" style="height: 50px;">
+            </a>
+            
+            <!-- Botones de navegación -->
+            {% if is_authenticated(session) %}
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse " id="navbarNav" style>
+                    <ul class="navbar-nav mx-auto mt-2 mt-lg-0">
+                        {% if check_permission(session,"user_index") %}
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{{ url_for('users.index') }}">Usuarios</a>
+                            </li>
+                        {% endif %}
+                        {% if check_permission(session,"employee_index") %}
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{{ url_for('employee_cedica.index') }}">Empleados</a>
+                            </li>
+                        {% endif %}
+                        {% if check_permission(session,"equestrian_index") %}
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{{ url_for('horses.index') }}">Caballos</a>
+                            </li>
+                        {% endif %}
+                        {% if check_permission(session, "J&A_index") %}
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('jinete_amazonas.list_riders') }}">J&As</a>
+                        </li>
+                        {% endif %}
+                        {% if check_permission(session,"payments_index") %}
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{{ url_for('payments_record.index') }}">Pagos</a>
+                            </li>
+                        {% endif %}
+                        {% if check_permission(session, "collection_index") %}
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{{ url_for('collection_record.index') }}">Cobros</a>
+                            </li>
+                        {% endif %}
+                        {% if check_permission(session, "editor_index") %}
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{{ url_for('publications.index') }}">Publicaciones</a>
+                            </li>
+                        {% endif %}
+                        {% if check_permission(session, "data_analysis_index") %}
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('reports.index') }}">Métricas</a>
+                        </li>
+                    {% endif %}
+                        {% if check_permission(session, "contact_index") %}
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{{ url_for('messages.index') }}">Consultas</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+            {% endif %}
+
+                <!-- Perfil  -->
+                {% if is_authenticated(session) %}
+                    <div class="dropdown ">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle"></i> {{current_user().alias}}
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li><a href="{{ url_for('users.show') }}" class="dropdown-item">Mi Perfil</a></li> 
+                            <li><a href="{{ url_for('auth.change_password') }}" class="dropdown-item">Cambiar Contraseña</a></li>
+                            <li><a href="{{ url_for('auth.logout') }}" class="dropdown-item">Cerrar Sesión</a></li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light">Iniciar Sesión</a>
+                {% endif %}
+        </div>
+        {% endblock %}
+    </nav>
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container">
+                    {% for category, message in messages %}
+                        <p class="flash {{ category }}">
+                            {{ message }}
+                        </p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    </main>
+    <div id="container" class="container mt-4 p-4 bg-light rounded shadow-sm flex-grow-1">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    {% block footer %}
+    <footer class="footer text-white text-center mt-4 py-3"style="background-color: #2b5ea2;">
+        <div class="container">
+            <p>© 2024 UNLP. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+    {% endblock %}
+    
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/delete.js') }}"></script>
+    {% block  scripts %}{% endblock %}
+</body>
+</html>

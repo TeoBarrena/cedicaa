@@ -1,0 +1,5 @@
+STATES = [
+    "Borrador", 
+    "Publicado",
+    "Archivado", 
+]
